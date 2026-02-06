@@ -1,0 +1,25 @@
+# PostgreSQL. Versions 9.3 and up are supported.
+#
+# Install the pg driver:
+#   gem install pg
+#
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: 127.0.0.1
+  port: 5432
+  username: postgres
+  password: 10Diego10
+
+development:
+  <<: *default
+  database: menu_express_development
+
+test:
+  <<: *default
+  database: menu_express_test
+
+production:
+  <<: *default
+  database: menu_express_production

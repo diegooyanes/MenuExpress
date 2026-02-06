@@ -1,0 +1,271 @@
+<div class="container">
+  <div class="admin-header">
+    <h1>📅 Gestionar Reservas</h1>
+    <p class="subtitle">Restaurante: <strong><%= @restaurant.name %></strong></p>
+  </div>
+
+  <% if @reservations.any? %>
+    <div class="reservations-list">
+      <% @reservations.each do |reservation| %>
+        <div class="reservation-card">
+          <div class="reservation-header">
+            <div class="guest-info">
+              <h3><%= reservation.full_name %></h3>
+              <p class="meta"><strong>ID Reserva:</strong> #<%= reservation.id %></p>
+            </div>
+            <div class="reservation-status">
+              <span class="badge badge-<%= reservation.status %>"><%= reservation.status.upcase %></span>
+            </div>
+          </div>
+
+          <div class="reservation-details">
+            <div class="detail-row">
+              <div class="detail-column">
+                <label>📍 Fecha y Hora</label>
+                <p><%= reservation.reserved_datetime.strftime("%d de %B de %Y a las %H:%M") %></p>
+              </div>
+              <div class="detail-column">
+                <label>👥 Número de Personas</label>
+                <p><%= reservation.number_of_guests %> personas</p>
+              </div>
+              <div class="detail-column">
+                <label>📞 Teléfono</label>
+                <p><a href="tel:<%= reservation.phone_number %>"><%= reservation.phone_number %></a></p>
+              </div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-column">
+                <label>🍽️ Mesa Asignada</label>
+                <p>Mesa <%= reservation.table.number %> (Capacidad: <%= reservation.table.capacity %> personas)</p>
+              </div>
+              <div class="detail-column">
+                <label>📝 Notas</label>
+                <p><%= reservation.special_requests || "Sin notas adicionales" %></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="reservation-actions">
+            <%= link_to "Ver Detalles", admin_restaurant_reservation_path(@restaurant, reservation), class: "btn btn-sm btn-primary" %>
+            <%= link_to "Cambiar Estado", edit_admin_restaurant_reservation_path(@restaurant, reservation), class: "btn btn-sm btn-secondary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p>📭 Aún no tienes reservas</p>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .admin-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid rgba(14, 165, 163, 0.2);
+  }
+
+  .admin-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: 28px;
+    color: var(--text);
+  }
+
+  .admin-header .subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .reservations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .reservation-card {
+    background: var(--page);
+    border: 1px solid rgba(15, 23, 35, 0.04);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(15, 23, 35, 0.02);
+    transition: all 0.2s;
+  }
+
+  .reservation-card:hover {
+    box-shadow: 0 8px 24px rgba(15, 23, 35, 0.06);
+    border-color: var(--accent);
+  }
+
+  .reservation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(15, 23, 35, 0.03);
+  }
+
+  .guest-info h3 {
+    margin: 0 0 0.5rem;
+    font-size: 18px;
+    color: var(--text);
+  }
+
+  .guest-info .meta {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .reservation-status {
+    display: flex;
+    align-items: center;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .badge-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+
+  .badge-confirmed {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  .badge-cancelled {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  .reservation-details {
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .detail-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .detail-column label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .detail-column p {
+    margin: 0;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .detail-column a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .detail-column a:hover {
+    text-decoration: underline;
+  }
+
+  .reservation-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(15, 23, 35, 0.03);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+    color: white;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(14, 165, 163, 0.2);
+  }
+
+  .btn-secondary {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid rgba(15, 23, 35, 0.04);
+  }
+
+  .btn-secondary:hover {
+    background: var(--page);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: var(--bg);
+    border-radius: 12px;
+    color: var(--muted);
+  }
+
+  .empty-state p {
+    margin: 0;
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .detail-row {
+      grid-template-columns: 1fr;
+    }
+
+    .reservation-header {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .reservation-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      justify-content: center;
+    }
+  }
+</style>

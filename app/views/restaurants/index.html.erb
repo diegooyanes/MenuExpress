@@ -1,0 +1,33 @@
+<main class="container">
+  <h2>Restaurantes disponibles</h2>
+  
+  <!-- Search Bar -->
+  <div class="search-bar-container">
+    <%= form_with url: restaurants_path, method: :get, local: true, class: "search-bar-form" do |f| %>
+      <%= f.text_field :search, placeholder: "🔍 Buscar restaurante por nombre...", class: "search-bar-input", value: params[:search] %>
+    <% end %>
+  </div>
+  
+  <div class="restaurants-grid">
+    <% @restaurants.each do |restaurant| %>
+      <%= link_to restaurant_path(restaurant), class: "restaurant-card-link" do %>
+        <div class="restaurant-image">
+          <% image_src = restaurant.logo || (restaurant.photos.attached? ? url_for(restaurant.photos.first) : 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1470&q=80') %>
+          <%= image_tag image_src, alt: restaurant.name, loading: "lazy" %>
+          <div class="image-overlay"></div>
+        </div>
+
+        <div class="restaurant-block">
+          <h3 class="restaurant-title"><%= restaurant.name %></h3>
+          <p class="restaurant-desc"><%= truncate(restaurant.description, length: 140) %></p>
+          <div class="restaurant-meta">
+            <span>Horario: <%= restaurant.open_time.strftime("%H:%M") %> - <%= restaurant.close_time.strftime("%H:%M") %></span>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  <footer>
+    &copy; <%= Time.now.year %> MenuExpress
+  </footer>
+</main>

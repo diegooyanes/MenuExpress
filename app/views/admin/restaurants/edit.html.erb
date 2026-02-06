@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h2>Editar información del restaurante</h2>
+    </div>
+
+    <div class="card-body">
+      <%= form_with model: [:admin, @restaurant], local: true, multipart: true do |f| %>
+        <div class="form-group">
+          <%= f.label :name, "Nombre" %>
+          <%= f.text_field :name %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :description, "Descripción" %>
+          <%= f.text_area :description %>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <%= f.label :address, "Dirección" %>
+            <%= f.text_field :address %>
+          </div>
+          <div class="form-group">
+            <%= f.label :open_time, "Hora apertura" %>
+            <%= f.time_field :open_time %>
+          </div>
+          <div class="form-group">
+            <%= f.label :close_time, "Hora cierre" %>
+            <%= f.time_field :close_time %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :logo, "Logo (URL o archivo)" %>
+          <%= f.text_field :logo, placeholder: "URL de la imagen" %>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :photos, "Fotos (subir)" %>
+          <%= f.file_field :photos, multiple: true %>
+
+          <% if @restaurant.photos.attached? %>
+            <div class="photos-preview">
+              <% @restaurant.photos.each do |photo| %>
+                <div class="photo-item">
+                  <%= image_tag photo.variant(resize_to_limit: [300, 200]) if photo.variable? %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div class="form-group">
+          <%= f.submit "Guardar y continuar", class: "btn btn-primary" %>
+          <%= link_to "Pagar $15/mes (Activar suscripción)", new_admin_restaurant_subscription_path(@restaurant), class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

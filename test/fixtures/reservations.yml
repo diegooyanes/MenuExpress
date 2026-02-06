@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  surname: MyString
+  phone: MyString
+  table: one
+  restaurant: one
+  start_time: 2026-02-05 22:34:02
+  end_time: 2026-02-05 22:34:02
+  status: MyString
+
+two:
+  name: MyString
+  surname: MyString
+  phone: MyString
+  table: two
+  restaurant: two
+  start_time: 2026-02-05 22:34:02
+  end_time: 2026-02-05 22:34:02
+  status: MyString

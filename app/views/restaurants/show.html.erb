@@ -1,0 +1,91 @@
+<% hero_image = @restaurant.photos.first ? url_for(@restaurant.photos.first.variant(resize_to_fill: [1200, 400])) : 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1200&h=400&fit=crop' %>
+<div class="restaurant-hero" style="background-image: url('<%= hero_image %>');">
+  <div class="restaurant-info-overlay">
+    <h1><%= @restaurant.name %></h1>
+    <p><%= @restaurant.address || "Ubicación" %></p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="restaurant-details">
+    <!-- Sidebar con información -->
+    <aside class="details-card">
+      <h3>📍 Información</h3>
+      
+      <div class="detail-item">
+        <span class="detail-label">Dirección</span>
+        <span class="detail-value"><%= @restaurant.address || "N/A" %></span>
+      </div>
+      
+      <div class="detail-item">
+        <span class="detail-label">Horarios</span>
+        <span class="detail-value">
+          <% if @restaurant.open_time && @restaurant.close_time %>
+            <%= @restaurant.open_time.strftime("%H:%M") %> - <%= @restaurant.close_time.strftime("%H:%M") %>
+          <% else %>
+            N/A
+          <% end %>
+        </span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Teléfono</span>
+        <span class="detail-value">+34 123 456 789</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Capacidad</span>
+        <span class="detail-value"><%= @restaurant.tables.sum(:capacity) %> personas</span>
+      </div>
+
+      <div class="detail-item">
+        <span class="detail-label">Mesas disponibles</span>
+        <span class="detail-value"><%= @restaurant.tables.where(available: true).count %> / <%= @restaurant.tables.count %></span>
+      </div>
+    </aside>
+
+    <!-- Main content: Descripción + Menú -->
+    <section class="restaurant-main">
+      <article class="details-card">
+        <h3>📖 Acerca de Nosotros</h3>
+        <p><%= @restaurant.description || "Descripción no disponible" %></p>
+      </article>
+
+      <!-- Menú -->
+      <h2>🍽️ Menú</h2>
+      <div class="menu-items">
+        <% @restaurant.menu_items.each do |item| %>
+          <div class="menu-item-card">
+            <h4><%= item.name %></h4>
+            <p><%= item.description || "Delicioso platillo" %></p>
+            <div class="menu-item-price">$<%= number_with_precision(item.price, precision: 2) %></div>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="action-buttons">
+        <%= link_to "📅 Hacer una Reserva", new_restaurant_reservation_path(@restaurant), class: "btn btn-primary" %>
+        <%= link_to "⭐ Escribir Reseña", new_restaurant_review_path(@restaurant), class: "btn btn-secondary" %>
+      </div>
+
+      <!-- Reseñas -->
+      <h2>⭐ Reseñas</h2>
+      <div class="reviews-section">
+        <% if @restaurant.reviews.any? %>
+          <% @restaurant.reviews.each do |review| %>
+            <div class="review-item">
+              <div class="review-header">
+                <span class="review-author"><%= review.name %></span>
+                <span class="review-rating">★ <%= review.rating %>/5</span>
+              </div>
+              <p class="review-text"><%= review.comment %></p>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted">Sin reseñas aún. ¡Sé el primero!</p>
+        <% end %>
+      </div>
+    </section>
+  </div>
+</div>

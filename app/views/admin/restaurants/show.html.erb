@@ -1,0 +1,287 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1><%= @restaurant.name %> - Admin Dashboard</h1>
+    <div class="subscription-status">
+      <% latest = @restaurant.subscriptions.order(created_at: :desc).first %>
+      <% if latest.present? && latest.status == 'active' %>
+        <span class="badge badge-success">Suscripción activa</span>
+      <% else %>
+        <%= link_to "Activar suscripción ($15/mes)", new_admin_restaurant_subscription_path(@restaurant), class: "btn btn-primary" %>
+      <% end %>
+    </div>
+    <%= link_to "Edit Restaurant Info", edit_admin_restaurant_path(@restaurant), class: "btn btn-secondary" %>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <h3><%= @upcoming_reservations.count %></h3>
+      <p>Upcoming Reservations</p>
+    </div>
+    <div class="stat-card">
+      <h3><%= @pending_reservations.count %></h3>
+      <p>Pending Confirmations</p>
+    </div>
+    <div class="stat-card">
+      <h3><% days_open = (@restaurant.close_time.hour - @restaurant.open_time.hour) %><%= days_open %></h3>
+      <p>Hours Operating</p>
+    </div>
+  </div>
+
+  <div class="dashboard-section">
+    <h2>Pending Reservations (Awaiting Confirmation)</h2>
+    
+    <% if @pending_reservations.any? %>
+      <table class="reservations-table">
+        <thead>
+          <tr>
+            <th>Guest Name</th>
+            <th>Date & Time</th>
+            <th>Guests</th>
+            <th>Phone</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pending_reservations.each do |reservation| %>
+            <tr>
+              <td><%= reservation.full_name %></td>
+              <td><%= reservation.reserved_datetime.strftime("%b %d, %Y at %I:%M %p") %></td>
+              <td><%= reservation.number_of_guests %></td>
+              <td><a href="tel:<%= reservation.phone_number %>"><%= reservation.phone_number %></a></td>
+              <td>
+                <%= link_to "Confirm", edit_admin_restaurant_reservation_path(@restaurant, reservation), 
+                    class: "btn btn-sm btn-success" %>
+                <%= link_to "Decline", edit_admin_restaurant_reservation_path(@restaurant, reservation), 
+                    class: "btn btn-sm btn-danger" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="empty-message">No pending reservations</p>
+    <% end %>
+  </div>
+
+  <div class="dashboard-section">
+    <div class="section-header">
+      <h2>Upcoming Reservations</h2>
+      <%= link_to "View All", admin_restaurant_reservations_path(@restaurant), class: "btn btn-link" %>
+    </div>
+
+    <% if @upcoming_reservations.any? %>
+      <table class="reservations-table">
+        <thead>
+          <tr>
+            <th>Guest Name</th>
+            <th>Date & Time</th>
+            <th>Guests</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @upcoming_reservations.each do |reservation| %>
+            <tr>
+              <td><%= reservation.full_name %></td>
+              <td><%= reservation.reserved_datetime.strftime("%b %d, %Y at %I:%M %p") %></td>
+              <td><%= reservation.number_of_guests %></td>
+              <td>
+                <span class="badge badge-<%= reservation.status %>">
+                  <%= reservation.status.capitalize %>
+                </span>
+              </td>
+              <td>
+                <%= link_to "View", admin_restaurant_reservation_path(@restaurant, reservation), 
+                    class: "btn btn-sm btn-info" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="empty-message">No upcoming reservations</p>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .admin-dashboard {
+    padding: 2rem;
+    background: #fff;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #eee;
+  }
+
+  .dashboard-header h1 {
+    margin: 0;
+    color: #333;
+  }
+
+  .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .stat-card h3 {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+
+  .stat-card p {
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+  }
+
+  .dashboard-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .dashboard-section h2 {
+    color: #333;
+    margin: 0 0 1rem 0;
+  }
+
+  .reservations-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f8f9fa;
+  }
+
+  .reservations-table thead {
+    background: #333;
+    color: white;
+  }
+
+  .reservations-table th,
+  .reservations-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .reservations-table tbody tr:hover {
+    background: #f0f0f0;
+  }
+
+  .reservations-table a {
+    color: #007bff;
+    text-decoration: none;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .badge-confirmed {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .badge-pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .badge-cancelled {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+
+  .btn-success {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background-color: #218838;
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+
+  .btn-info {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .btn-info:hover {
+    background-color: #138496;
+  }
+
+  .btn-link {
+    color: #007bff;
+    background: none;
+    padding: 0;
+  }
+
+  .btn-link:hover {
+    text-decoration: underline;
+  }
+
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .empty-message {
+    color: #6c757d;
+    font-style: italic;
+    padding: 2rem;
+    text-align: center;
+  }
+</style>
