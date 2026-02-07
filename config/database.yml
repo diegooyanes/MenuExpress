@@ -19,6 +19,9 @@ development:
   cable:
     <<: *default
     database: menu_express_development
+  queue:
+    <<: *default
+    database: menu_express_development
 
 test:
   primary:
@@ -27,11 +30,17 @@ test:
   cable:
     <<: *default
     database: menu_express_test
+  queue:
+    <<: *default
+    database: menu_express_test
 
 production:
   primary:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
   cable:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+  queue:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
