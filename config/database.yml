@@ -22,6 +22,9 @@ development:
   queue:
     <<: *default
     database: menu_express_development
+  cache:
+    <<: *default
+    database: menu_express_development
 
 test:
   primary:
@@ -33,6 +36,9 @@ test:
   queue:
     <<: *default
     database: menu_express_test
+  cache:
+    <<: *default
+    database: menu_express_test
 
 production:
   primary:
@@ -42,5 +48,8 @@ production:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
   queue:
+    <<: *default
+    url: <%= ENV["DATABASE_URL"] %>
+  cache:
     <<: *default
     url: <%= ENV["DATABASE_URL"] %>
