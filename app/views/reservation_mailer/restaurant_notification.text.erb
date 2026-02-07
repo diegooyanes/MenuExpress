@@ -1,0 +1,13 @@
+Nueva reserva recibida
+
+Restaurante: <%= @restaurant.name %>
+Cliente: <%= @reservation.full_name %>
+Fecha: <%= @reservation.reserved_datetime.strftime("%d/%m/%Y") %>
+Hora: <%= @reservation.reserved_datetime.strftime("%H:%M") %>
+Personas: <%= @reservation.number_of_guests %>
+Telefono: <%= @reservation.phone_number %>
+Email: <%= @reservation.email %>
+
+Ver reservas del día: <%= @day_url %>
+
+MenuExpress

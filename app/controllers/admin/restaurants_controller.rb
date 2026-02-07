@@ -2,8 +2,8 @@ module Admin
   class RestaurantsController < ApplicationController
     before_action :authenticate_restaurant!
     before_action :require_active_subscription!, only: [:show, :edit, :update]
-    before_action :set_restaurant, only: [:show, :edit, :update, :destroy, :confirm_delete, :photo]
-    before_action :authorize_restaurant!, only: [:show, :edit, :update, :destroy, :confirm_delete, :photo]
+    before_action :set_restaurant, only: [:show, :edit, :update, :destroy, :confirm_delete, :photo, :menu_file]
+    before_action :authorize_restaurant!, only: [:show, :edit, :update, :destroy, :confirm_delete, :photo, :menu_file]
 
     # GET /admin/restaurants
     def index
@@ -13,8 +13,12 @@ module Admin
     # GET /admin/restaurants/:id
     # Dashboard with reservation statistics
     def show
-      @upcoming_reservations = @restaurant.reservations.upcoming.limit(10)
+      @upcoming_reservations = @restaurant.reservations.upcoming.where(status: "confirmed").limit(10)
       @pending_reservations = @restaurant.reservations.pending.limit(5)
+      week = Date.current.beginning_of_week..Date.current.end_of_week
+      @weekly_total = @restaurant.reservations.where(reservation_date: week).count
+      @weekly_cancelled = @restaurant.reservations.where(reservation_date: week, status: "cancelled").count
+      @weekly_confirmed = @restaurant.reservations.where(reservation_date: week).where.not(status: "cancelled").count
     end
 
     # GET /admin/restaurants/:id/edit

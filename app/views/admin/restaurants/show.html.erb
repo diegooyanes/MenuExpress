@@ -13,25 +13,60 @@
       <p>Reservas proximas</p>
     </div>
     <div class="stat-card">
-      <h3><%= @pending_reservations.count %></h3>
-      <p>Pendientes de confirmar</p>
+      <h3><%= @restaurant.reservations.where(status: "cancelled").count %></h3>
+      <p>Reservas canceladas</p>
     </div>
     <div class="stat-card">
-      <h3><%= @restaurant.menu_file.attached? ? "Sí" : "No" %></h3>
-      <p>Menú cargado</p>
+      <h3><%= @restaurant.view_count.to_i %></h3>
+      <p>Número de personas que han visitado tu página</p>
+      <% percent = [@restaurant.view_count.to_i, 100].min %>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" style="width: <%= percent %>%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <h2>Resumen semanal</h2>
+    <p class="text-muted">Vista rápida de la última semana.</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <h3><%= @weekly_total %></h3>
+        <p>Reservas totales</p>
+      </div>
+      <div class="stat-card">
+        <h3><%= @weekly_confirmed %></h3>
+        <p>Confirmadas</p>
+      </div>
+      <div class="stat-card">
+        <h3><%= @weekly_cancelled %></h3>
+        <p>Canceladas</p>
+      </div>
     </div>
   </div>
 
   <div class="dashboard-grid">
     <div class="module-card">
-      <h2>Operacion del dia</h2>
-      <p class="text-muted">Control rapido de reservas y disponibilidad.</p>
-      <div class="status-row">
-        <span class="badge badge-pending">Pendientes: <%= @pending_reservations.count %></span>
-        <span class="badge badge-confirmed">Confirmadas: <%= @restaurant.reservations.confirmed.count %></span>
-        <span class="badge badge-completed">Completadas: <%= @restaurant.reservations.completed.count %></span>
-        <span class="badge badge-cancelled">Canceladas: <%= @restaurant.reservations.where(status: "cancelled").count %></span>
-      </div>
+      <h2>Reservas recientes</h2>
+      <p class="text-muted">Listado de reservas y su estado.</p>
+      <% if @upcoming_reservations.any? %>
+        <div class="review-item">
+          <% @upcoming_reservations.each do |reservation| %>
+            <div class="review-header">
+              <span class="review-author"><%= reservation.full_name %></span>
+              <span class="badge badge-<%= reservation.display_status_class %>"><%= reservation.status_label %></span>
+            </div>
+            <p class="review-text">
+              <strong>Fecha:</strong> <%= reservation.reserved_datetime.strftime("%d/%m/%Y %H:%M") %><br>
+              <strong>Personas:</strong> <%= reservation.number_of_guests %><br>
+              <strong>Teléfono:</strong> <%= reservation.phone_number %>
+            </p>
+            <hr style="border:0;border-top:1px solid var(--line);margin:12px 0;">
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">No hay reservas próximas.</p>
+      <% end %>
     </div>
 
     <div class="module-card">
@@ -60,7 +95,6 @@
         </div>
         <div>
           <span class="label">Reservas</span>
-          <p class="value"><%= @restaurant.reservations_enabled? ? "Habilitadas" : "Deshabilitadas" %></p>
         </div>
       </div>
     </div>

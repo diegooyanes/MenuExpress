@@ -76,7 +76,7 @@
           <div class="file-input">
             <label class="file-label">+ Subir fotos</label>
             <%= f.file_field :photos, multiple: true, accept: "image/*", class: "file-control" %>
-            <span class="file-name">Puedes seleccionar varias</span>
+            <span class="file-name">Sin archivo</span>
           </div>
           <small class="text-muted">Puedes seleccionar varias a la vez (Ctrl o Shift).</small>
 
@@ -85,23 +85,29 @@
               <% @restaurant.photos.each do |photo| %>
                 <div class="photo-item">
                   <%= image_tag photo.variant(resize_to_fill: [180, 140]) if photo.variable? %>
-                  <%= button_to "×",
-                                photo_admin_restaurant_path(@restaurant, photo_id: photo.id),
-                                method: :delete,
-                                class: "photo-delete",
-                                form: { class: "photo-delete-form" },
-                                data: { confirm: "Eliminar esta foto?" } %>
+                  <button type="button"
+                          class="photo-delete"
+                          data-modal-open="photo-delete-<%= photo.id %>">×</button>
+                </div>
+
+                <div class="menu-modal" id="photo-delete-<%= photo.id %>" data-modal>
+                  <div class="menu-modal-backdrop" data-modal-close></div>
+                  <div class="menu-modal-card">
+                    <button type="button" class="menu-modal-close" data-modal-close>×</button>
+                    <h3>Eliminar foto</h3>
+                    <p class="text-muted">Estas seguro de eliminar esta foto?</p>
+                    <div class="form-actions">
+                      <%= link_to "Eliminar",
+                                  photo_admin_restaurant_path(@restaurant, photo_id: photo.id),
+                                  class: "btn btn-danger",
+                                  data: { turbo_method: :delete } %>
+                      <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+                    </div>
+                  </div>
                 </div>
               <% end %>
             </div>
           <% end %>
-        </div>
-
-        <div class="form-group">
-          <label>
-            <%= f.check_box :reservations_enabled %>
-            Reservas habilitadas
-          </label>
         </div>
 
         <div class="form-group">

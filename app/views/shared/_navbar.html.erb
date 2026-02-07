@@ -11,6 +11,7 @@
         <li><%= link_to "Inicio", restaurants_path, class: "navbar-link" %></li>
         <li><%= link_to "Sobre Nosotros", about_path, class: "navbar-link" %></li>
         <li><a href="#contact" class="navbar-link">Contacto</a></li>
+        <li><%= link_to "Solo restaurantes", restaurants_landing_path, class: "navbar-link" %></li>
         <% if user_signed_in? %>
           <li><%= link_to "Mis reservas", users_reservations_path, class: "navbar-link" %></li>
         <% end %>
@@ -23,7 +24,7 @@
       <% elsif user_signed_in? %>
         <%= button_to "Cerrar sesión", destroy_user_session_path, method: :delete, class: "btn btn-sm btn-secondary" %>
       <% end %>
-      <button class="navbar-burger" aria-label="Abrir menú" aria-expanded="false">
+      <button class="navbar-burger" aria-label="Abrir menú" aria-expanded="false" <%= "data-role=\"sidebar-toggle\"" if controller_path.start_with?('admin/') && restaurant_signed_in? %>>
         <span class="burger-line"></span>
         <span class="burger-line"></span>
         <span class="burger-line"></span>

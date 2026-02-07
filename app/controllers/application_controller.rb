@@ -16,6 +16,14 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
   end
 
+  def after_sign_in_path_for(resource)
+    if resource.is_a?(Restaurant)
+      admin_restaurant_path(resource)
+    else
+      super
+    end
+  end
+
   # Redirect to login if restaurant is not authenticated (call via before_action)
   def authenticate_restaurant!
     redirect_to new_restaurant_session_path, alert: "Please sign in to your restaurant account" unless restaurant_signed_in?

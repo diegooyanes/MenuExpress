@@ -1,4 +1,6 @@
 class ReservationsController < ApplicationController
+  rescue_from ActiveSupport::MessageVerifier::InvalidSignature, with: :invalid_reservation_link
+
   before_action :set_restaurant, only: [:new, :create, :index]
 
   # GET /restaurants/:restaurant_id/reservations/new
@@ -26,17 +28,35 @@ class ReservationsController < ApplicationController
     end
     set_availability_context
     unless capacity_available?(@selected_date, @selected_time, @guest_count)
-      @reservation.errors.add(:base, "No hay cupo disponible para esa fecha y hora.")
+      @reservation.errors.add(:base, "La hora está completa. Elige otra disponible.")
       return render :new, status: :unprocessable_entity
     end
 
     if @reservation.save
       ReservationMailer.confirmation(@reservation).deliver_now
+      ReservationMailer.restaurant_notification(@reservation).deliver_now
       redirect_to restaurant_path(@restaurant),
                   notice: "Su reserva ha sido confirmada."
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def confirm
+    reservation = Reservation.find_signed!(params[:token], purpose: "reservation_confirm")
+    reservation.update(status: "confirmed") unless reservation.status == "cancelled"
+    redirect_to restaurant_path(reservation.restaurant), notice: "Reserva confirmada."
+  end
+
+  def cancel
+    reservation = Reservation.find_signed!(params[:token], purpose: "reservation_cancel")
+    unless reservation.cancellable?
+      return redirect_to restaurant_path(reservation.restaurant),
+                         alert: "No puedes cancelar con menos de 1 hora de antelación."
+    end
+
+    reservation.update(status: "cancelled")
+    redirect_to restaurant_path(reservation.restaurant), notice: "Reserva cancelada."
   end
 
   # GET /restaurants/:restaurant_id/reservations
@@ -95,5 +115,9 @@ class ReservationsController < ApplicationController
     raw_date = raw["reservation_date"].presence
     raw["reservation_date"] = parse_date_input(raw_date) if raw_date
     raw
+  end
+
+  def invalid_reservation_link
+    redirect_to root_path, alert: "El enlace de la reserva no es válido o ha expirado."
   end
 end

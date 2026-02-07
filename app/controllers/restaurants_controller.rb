@@ -24,6 +24,7 @@ class RestaurantsController < ApplicationController
     @guest_count = 2
     @available_times = @restaurant.available_time_slots(@selected_date, @guest_count)
     @review = Review.new
+    @restaurant.increment!(:view_count)
   end
 
   private

@@ -1,0 +1,68 @@
+<main class="landing">
+  <section class="landing-hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <p class="hero-kicker">MenuExpress</p>
+        <h1>MenuExpress Solo Restaurantes</h1>
+        <p class="hero-subtitle">
+          Un panel profesional para gestionar reservas, menú, horarios y clientes.
+        </p>
+        <div class="hero-actions">
+          <%= link_to "Iniciar sesión", new_restaurant_session_path, class: "btn btn-primary" %>
+          <%= link_to "Crear cuenta", new_restaurant_registration_path, class: "btn btn-secondary" %>
+        </div>
+        <div class="hero-metrics">
+          <div>
+            <strong>+24%</strong>
+            <span>más reservas confirmadas</span>
+          </div>
+          <div>
+            <strong>15 min</strong>
+            <span>para activar tu panel</span>
+          </div>
+          <div>
+            <strong>24/7</strong>
+            <span>control del negocio</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="hero-card">
+          <h3>Calendario de reservas</h3>
+          <p>Disponibilidad por aforo y horarios claros.</p>
+          <div class="hero-card-row">
+            <span class="pill">Confirmada</span>
+            <span class="pill pill-soft">Pendiente</span>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h3>Menú</h3>
+          <p>Sube tu menú una vez y muéstralo en segundos.</p>
+          <div class="hero-card-row">
+            <span class="mini-stat">1 archivo</span>
+            <span class="mini-stat">Actualizable</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section">
+    <div class="container">
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Perfil profesional</h3>
+          <p>Portada, galería y datos esenciales del restaurante.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Operación clara</h3>
+          <p>Aforo, horarios y estados en un tablero simple.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Clientes reales</h3>
+          <p>Reseñas y reservas en un flujo organizado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

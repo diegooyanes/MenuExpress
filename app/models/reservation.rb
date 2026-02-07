@@ -31,17 +31,62 @@ class Reservation < ApplicationRecord
 
   def reserved_datetime
     return if reservation_date.blank? || reservation_time.blank?
-    DateTime.parse("#{reservation_date} #{reservation_time.strftime('%H:%M')}")
+    time_value =
+      if reservation_time.is_a?(String)
+        Time.zone.parse(reservation_time)
+      else
+        reservation_time
+      end
+    return if time_value.blank?
+
+    Time.zone.local(
+      reservation_date.year,
+      reservation_date.month,
+      reservation_date.day,
+      time_value.hour,
+      time_value.min
+    )
+  end
+
+  def status_label
+    display_status
+  end
+
+  def display_status
+    return "Cancelada" if status == "cancelled"
+    return "Completada" if status == "completed"
+    return "Confirmado" if status == "confirmed"
+
+    # Si no se confirmó por correo, se mantiene pendiente hasta 1 hora antes.
+    return "Confirmado" if reserved_datetime.present? && reserved_datetime <= 1.hour.from_now
+
+    "Pendiente"
+  end
+
+  def display_status_class
+    return "cancelled" if display_status == "Cancelada"
+    return "completed" if display_status == "Completada"
+    return "confirmed" if display_status == "Confirmado"
+    "pending"
   end
 
   def cancellable?
+    return false if reserved_datetime.blank?
     reserved_datetime > 1.hour.from_now
+  end
+
+  def confirm_token
+    signed_id(purpose: "reservation_confirm", expires_in: 7.days)
+  end
+
+  def cancel_token
+    signed_id(purpose: "reservation_cancel", expires_in: 7.days)
   end
 
   private
 
   def set_default_status
-    self.status ||= "confirmed"
+    self.status ||= "pending"
   end
 
   def capacity_available_for_time

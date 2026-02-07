@@ -31,54 +31,10 @@
   </div>
 
   <div class="status-update-card">
-    <h2>Update Reservation Status</h2>
-    
-    <%= form_with(model: [:admin, @restaurant, @reservation], local: true, class: "status-form") do |form| %>
-      <% if @reservation.errors.any? %>
-        <div id="error_explanation" class="alert alert-danger">
-          <h4><%= pluralize(@reservation.errors.count, "error") %> prohibited this update:</h4>
-          <ul>
-            <% @reservation.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <div class="form-group">
-        <%= form.label :status, "Reservation Status" %>
-        <%= form.select :status, 
-                        [["Pending", "pending"], ["Confirmed", "confirmed"], ["Completed", "completed"], ["Cancelled", "cancelled"]], 
-                        { selected: @reservation.status },
-                        class: "form-control status-select" %>
-        <small class="status-hint">
-          <% case @reservation.status %>
-            <% when "pending" %>
-              This reservation is awaiting confirmation. Contact the guest to confirm.
-            <% when "confirmed" %>
-              This reservation has been confirmed. The guest has been notified.
-            <% when "completed" %>
-              This reservation has been completed.
-            <% when "cancelled" %>
-              This reservation has been cancelled.
-          <% end %>
-        </small>
-      </div>
-
-      <div class="form-actions">
-        <%= form.submit "Update Status", class: "btn btn-primary btn-lg" %>
-        <%= link_to "Cancel", admin_restaurant_reservations_path(@restaurant), class: "btn btn-secondary" %>
-      </div>
-    <% end %>
-  </div>
-
-  <% if @reservation.status != "cancelled" %>
-    <div class="danger-zone">
-      <h3>Danger Zone</h3>
-      <%= form_with(model: [:admin, @restaurant, @reservation], local: true) do |form| %>
-        <%= form.hidden_field :status, value: "cancelled" %>
-        <%= form.submit "Cancel Reservation", class: "btn btn-danger", data: { confirm: "Are you sure?" } %>
-      <% end %>
+    <h2>Estado de la reserva</h2>
+    <p class="text-muted">El restaurante no puede modificar el estado de la reserva.</p>
+    <div class="form-actions">
+      <%= link_to "Volver", admin_restaurant_reservations_path(@restaurant), class: "btn btn-secondary" %>
     </div>
-  <% end %>
+  </div>
 </div>

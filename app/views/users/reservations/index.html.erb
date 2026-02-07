@@ -13,7 +13,7 @@
         <div class="review-item">
           <div class="review-header">
             <span class="review-author"><%= reservation.restaurant.name %></span>
-            <span class="review-rating"><%= reservation.status.humanize %></span>
+            <span class="badge badge-<%= reservation.display_status_class %>"><%= reservation.status_label %></span>
           </div>
           <p class="review-text">
             <strong>Fecha:</strong> <%= reservation.reserved_datetime.strftime("%d/%m/%Y %H:%M") %><br>

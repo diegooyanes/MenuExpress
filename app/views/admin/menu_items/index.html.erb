@@ -21,6 +21,7 @@
         <div class="file-input">
           <label class="file-label">+ Subir menú</label>
           <%= f.file_field :menu_file,
+                           id: "menu-file-input",
                            accept: "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                            class: "file-control" %>
           <span class="file-name">Sin archivo</span>

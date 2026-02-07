@@ -9,11 +9,15 @@ Rails.application.routes.draw do
              path_names: { sign_in: "login", sign_out: "salir", sign_up: "registro" },
              controllers: { registrations: "restaurants/registrations" }
 
+  get "reservations/confirm/:token", to: "reservations#confirm", as: :confirm_reservation
+  get "reservations/cancel/:token", to: "reservations#cancel", as: :cancel_reservation
+
   namespace :users do
     resources :reservations, only: [:index, :destroy]
   end
 
   root "restaurants#index"
+  get "solo-restaurantes", to: "restaurants_landing#index", as: :restaurants_landing
 
   get '/about', to: 'about#index', as: :about
 

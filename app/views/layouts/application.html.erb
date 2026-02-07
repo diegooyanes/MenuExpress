@@ -34,26 +34,30 @@
     <% if controller_path.start_with?('admin/') && restaurant_signed_in? %>
       <div class="app-shell">
         <aside class="sidebar">
+          <div class="sidebar-mobile-header">
+            <div class="sidebar-mobile-brand">
+              <%= image_tag "Logo.png", alt: "MenuExpress", class: "navbar-logo-image" %>
+              <strong>MenuExpress</strong>
+            </div>
+            <div class="sidebar-mobile-actions">
+              <button class="sidebar-close" aria-label="Cerrar menú" type="button">×</button>
+            </div>
+          </div>
           <div class="sidebar-brand">
             <span class="sidebar-logo">
               <%= image_tag "Logo.png", alt: "MenuExpress", class: "sidebar-logo-image" %>
             </span>
             <div>
-              <strong>MenuExpress</strong>
-              <small>Panel</small>
+              <strong>Para restaurantes</strong>
             </div>
           </div>
           <nav class="sidebar-nav">
-            <%= link_to "Dashboard", admin_restaurant_path(current_restaurant), class: "sidebar-link" %>
+            <%= link_to "Panel principal", admin_restaurant_path(current_restaurant), class: "sidebar-link" %>
             <%= link_to "Reservas", admin_restaurant_reservations_path(current_restaurant), class: "sidebar-link" %>
             <%= link_to "Menú", admin_restaurant_menu_items_path(current_restaurant), class: "sidebar-link" %>
             <%= link_to "Reseñas", admin_restaurant_reviews_path(current_restaurant), class: "sidebar-link" %>
             <%= link_to "Perfil", edit_admin_restaurant_path(current_restaurant), class: "sidebar-link" %>
           </nav>
-          <div class="sidebar-footer">
-            <span class="pill">Cuenta activa</span>
-            <%= button_to "Salir", destroy_restaurant_session_path, method: :delete, class: "btn btn-secondary btn-sm", form: { class: "sidebar-logout" } %>
-          </div>
         </aside>
         <main class="app-content">
           <%= yield %>
@@ -66,39 +70,81 @@
     <script>
       // Hamburger menu toggle with smooth animation (works with Turbo)
       function initNavbarMenu() {
-        var burger = document.querySelector('.navbar-burger');
-        var navbar = document.querySelector('.navbar');
-        var menuLinks = document.querySelectorAll('.navbar-menu .navbar-link');
+        var burgers = document.querySelectorAll('.navbar-burger');
+        var shell = document.querySelector('.app-shell');
+        var closeBtn = document.querySelector('.sidebar-close');
 
-        if(!burger || !navbar) return;
+        if (!burgers.length) return;
 
-        // Avoid double-binding on Turbo visits
-        if (burger.dataset.bound === 'true') return;
-        burger.dataset.bound = 'true';
+        burgers.forEach(function(burger) {
+          // Avoid double-binding on Turbo visits
+          if (burger.dataset.bound === 'true') return;
+          burger.dataset.bound = 'true';
 
-        // Toggle menu on burger click
-        burger.addEventListener('click', function(e){
-          e.preventDefault();
-          var expanded = this.getAttribute('aria-expanded') === 'true';
-          this.setAttribute('aria-expanded', (!expanded).toString());
-          navbar.classList.toggle('open');
-        });
+          var navbar = burger.closest('.navbar');
+          var menuLinks = navbar ? navbar.querySelectorAll('.navbar-menu .navbar-link') : [];
 
-        // Close menu when clicking a link
-        menuLinks.forEach(function(link){
-          link.addEventListener('click', function(){
-            burger.setAttribute('aria-expanded', 'false');
-            navbar.classList.remove('open');
+          burger.addEventListener('click', function(e){
+            e.preventDefault();
+            var expanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', (!expanded).toString());
+
+            var isAdminShell = document.body.classList.contains('is-admin') && shell;
+
+            if (burger.dataset.role === 'sidebar-toggle' || isAdminShell) {
+              if (shell) shell.classList.toggle('sidebar-open');
+            } else if (navbar) {
+              navbar.classList.toggle('open');
+            }
+          });
+
+          // Close public menu when clicking a link
+          menuLinks.forEach(function(link){
+            link.addEventListener('click', function(){
+              burger.setAttribute('aria-expanded', 'false');
+              if (navbar) navbar.classList.remove('open');
+            });
           });
         });
 
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e){
-          if(!navbar.contains(e.target) && navbar.classList.contains('open')){
-            burger.setAttribute('aria-expanded', 'false');
-            navbar.classList.remove('open');
-          }
+        // Close sidebar when clicking a link (mobile)
+        var sidebarLinks = document.querySelectorAll('.sidebar-link');
+        sidebarLinks.forEach(function(link){
+          link.addEventListener('click', function(){
+            if (!shell) return;
+            shell.classList.remove('sidebar-open');
+            burgers.forEach(function(b){ b.setAttribute('aria-expanded', 'false'); });
+          });
         });
+
+        // Close public menu when clicking outside
+        document.addEventListener('click', function(e){
+          burgers.forEach(function(burger){
+            var navbar = burger.closest('.navbar');
+            if (!navbar) return;
+            if(!navbar.contains(e.target) && navbar.classList.contains('open')){
+              burger.setAttribute('aria-expanded', 'false');
+              navbar.classList.remove('open');
+            }
+          });
+        });
+
+        // Close sidebar with X or overlay
+        if (closeBtn && shell) {
+          closeBtn.addEventListener('click', function() {
+            shell.classList.remove('sidebar-open');
+            burgers.forEach(function(b){ b.setAttribute('aria-expanded', 'false'); });
+          });
+        }
+
+        if (shell) {
+          shell.addEventListener('click', function(e) {
+            if (!shell.classList.contains('sidebar-open')) return;
+            if (e.target !== shell) return;
+            shell.classList.remove('sidebar-open');
+            burgers.forEach(function(b){ b.setAttribute('aria-expanded', 'false'); });
+          });
+        }
       }
 
       function initModals() {
@@ -288,6 +334,7 @@
             }
           });
         });
+
       }
 
       document.addEventListener('DOMContentLoaded', function() {

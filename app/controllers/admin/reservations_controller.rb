@@ -27,6 +27,21 @@ class Admin::ReservationsController < ApplicationController
       @calendar_days = (0..6).map { |i| start_date + i }
     end
 
+    @calendar_view = "day" if params[:date].present?
+    if @calendar_view == "day"
+      @calendar_days = [base_date]
+      @day_reservations = @restaurant.reservations
+                                    .where(reservation_date: base_date)
+                                    .order(:reservation_time)
+
+      if params[:q].present?
+        query = "%#{params[:q].strip}%"
+        @day_reservations = @day_reservations.where("first_name ILIKE ? OR last_name ILIKE ?", query, query)
+      end
+    else
+      @day_reservations = []
+    end
+
     total_capacity = @restaurant.max_capacity.to_i
     daily_counts = @restaurant.reservations
                               .where(reservation_date: @calendar_days)
@@ -46,18 +61,14 @@ class Admin::ReservationsController < ApplicationController
 
   # GET /admin/restaurants/:restaurant_id/reservations/:id/edit
   def edit
+    redirect_to admin_restaurant_reservation_path(@restaurant, @reservation),
+                alert: "El estado de la reserva no se puede modificar desde el restaurante."
   end
 
   # PATCH/PUT /admin/restaurants/:restaurant_id/reservations/:id
   def update
-    old_status = @reservation.status
-
-    if @reservation.update(reservation_params)
-      redirect_to admin_restaurant_reservation_path(@restaurant, @reservation),
-                  notice: "Reservation was successfully updated."
-    else
-      render :edit, status: :unprocessable_entity
-    end
+    redirect_to admin_restaurant_reservation_path(@restaurant, @reservation),
+                alert: "El estado de la reserva no se puede modificar desde el restaurante."
   end
 
   private

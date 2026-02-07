@@ -3,16 +3,16 @@
     <div class="container hero-grid">
       <div class="hero-content">
         <p class="hero-kicker">MenuExpress</p>
-        <h1>La forma elegante de gestionar menú, mesas y reservas en un solo lugar.</h1>
+        <h1>Descubre restaurantes increíbles y reserva en segundos.</h1>
         <p class="hero-subtitle">
-          Diseñado para restaurantes que quieren claridad operativa, menos caos y más reservas confirmadas.
+          Encuentra tu próximo lugar favorito, revisa el menú y reserva sin complicaciones.
         </p>
         <div class="hero-actions">
           <% if restaurant_signed_in? %>
-            <%= link_to "Ir al Dashboard", admin_restaurant_path(current_restaurant), class: "btn btn-primary" %>
+            <%= link_to "Ir al panel principal", admin_restaurant_path(current_restaurant), class: "btn btn-primary" %>
             <%= link_to "Editar Perfil", edit_admin_restaurant_path(current_restaurant), class: "btn btn-secondary" %>
           <% elsif user_signed_in? %>
-            <%= link_to "Explorar restaurantes", restaurants_path, class: "btn btn-primary" %>
+            <span class="text-muted">Explora los restaurantes disponibles abajo.</span>
           <% else %>
             <%= link_to "Crear cuenta", new_user_registration_path, class: "btn btn-primary" %>
             <%= link_to "Iniciar sesión", new_user_session_path, class: "btn btn-secondary" %>
@@ -20,34 +20,34 @@
         </div>
         <div class="hero-metrics">
           <div>
-            <strong>+24%</strong>
-            <span>menos cancelaciones</span>
+            <strong>+120</strong>
+            <span>restaurantes disponibles</span>
           </div>
           <div>
             <strong>1 min</strong>
-            <span>para crear una reserva</span>
+            <span>para reservar tu mesa</span>
           </div>
           <div>
             <strong>24/7</strong>
-            <span>control del negocio</span>
+            <span>reservas abiertas</span>
           </div>
         </div>
       </div>
       <div class="hero-panel">
         <div class="hero-card">
-          <h3>Panel de Reservas</h3>
-          <p>Vistas claras, estados y contacto inmediato con clientes.</p>
+          <h3>Reservas rápidas</h3>
+          <p>Elige tu hora disponible y confirma en segundos.</p>
           <div class="hero-card-row">
-            <span class="pill">Pendiente</span>
+            <span class="pill">Disponible</span>
             <span class="pill pill-soft">Confirmada</span>
           </div>
         </div>
         <div class="hero-card">
-          <h3>Menú Digital</h3>
-          <p>Actualiza platos y precios sin tocar código.</p>
+          <h3>Menú a la vista</h3>
+          <p>Consulta el menú completo antes de ir.</p>
           <div class="hero-card-row">
-            <span class="mini-stat">12 platos</span>
-            <span class="mini-stat">2 categorías</span>
+            <span class="mini-stat">PDF</span>
+            <span class="mini-stat">Actualizado</span>
           </div>
         </div>
       </div>
@@ -110,15 +110,15 @@
       <div class="feature-grid">
         <div class="feature-card">
           <h3>Reservas sin fricción</h3>
-          <p>Clientes reservan rápido y tú tienes control total del flujo.</p>
+          <p>Reserva tu mesa en segundos con horarios disponibles.</p>
         </div>
         <div class="feature-card">
-          <h3>Operación clara</h3>
-          <p>Aforo, horarios y estados en un tablero simple y ordenado.</p>
+          <h3>Información clara</h3>
+          <p>Horario, ubicación y menú siempre actualizados.</p>
         </div>
         <div class="feature-card">
-          <h3>Confianza y control</h3>
-          <p>Acceso privado para cada restaurante, sin mezclar datos.</p>
+          <h3>Reseñas reales</h3>
+          <p>Lee opiniones y elige el mejor lugar para ti.</p>
         </div>
       </div>
     </div>
@@ -141,24 +141,6 @@
     </div>
   </section>
 
-  <section class="landing-section alt">
-    <div class="container">
-      <div class="dashboard-header">
-        <div>
-          <p class="hero-kicker">Solo restaurantes</p>
-          <h2>Acceso para restaurantes</h2>
-          <p class="text-muted">Gestiona tu menú, mesas y reservas desde el panel privado.</p>
-        </div>
-        <div class="dashboard-actions">
-          <%= link_to "Iniciar sesión", new_restaurant_session_path, class: "btn btn-primary" %>
-          <%= link_to "Crear cuenta", new_restaurant_registration_path, class: "btn btn-secondary" %>
-        </div>
-      </div>
-      <div class="module-card">
-        <p class="text-muted">Si ya tienes cuenta de restaurante, entra al panel para administrar tu negocio.</p>
-      </div>
-    </div>
-  </section>
 
   <footer class="site-footer">
     <div class="container footer-inner">
