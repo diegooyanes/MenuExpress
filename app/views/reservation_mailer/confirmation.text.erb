@@ -1,0 +1,14 @@
+Tu reserva ha sido confirmada
+
+Hola <%= @reservation.full_name %>,
+
+Gracias por reservar en <%= @restaurant.name %>.
+
+Fecha: <%= @reservation.reserved_datetime.strftime("%d/%m/%Y") %>
+Hora: <%= @reservation.reserved_datetime.strftime("%H:%M") %>
+Personas: <%= @reservation.number_of_guests %>
+Telefono: <%= @reservation.phone_number %>
+
+Politica de cancelacion: puedes cancelar hasta 1 hora antes de tu reserva.
+
+MenuExpress

@@ -1,0 +1,51 @@
+es:
+  devise:
+    confirmations:
+      confirmed: "Tu correo ha sido confirmado correctamente."
+      send_instructions: "Recibirás un correo con instrucciones para confirmar tu cuenta en unos minutos."
+      send_paranoid_instructions: "Si tu correo existe en nuestra base de datos, recibirás un correo con instrucciones para confirmar tu cuenta en unos minutos."
+    failure:
+      already_authenticated: "Ya iniciaste sesión."
+      inactive: "Tu cuenta no está activa todavía."
+      invalid: "Correo o contraseña inválidos."
+      locked: "Tu cuenta está bloqueada."
+      last_attempt: "Te queda un intento antes de que tu cuenta se bloquee."
+      not_found_in_database: "Correo o contraseña inválidos."
+      timeout: "Tu sesión expiró. Inicia sesión de nuevo para continuar."
+      unauthenticated: "Debes iniciar sesión o crear una cuenta para continuar."
+      unconfirmed: "Debes confirmar tu correo antes de continuar."
+    mailer:
+      confirmation_instructions:
+        subject: "Confirma tu cuenta"
+      reset_password_instructions:
+        subject: "Restablecer contraseña"
+      unlock_instructions:
+        subject: "Desbloquear cuenta"
+      email_changed:
+        subject: "Tu correo ha cambiado"
+      password_change:
+        subject: "Tu contraseña ha cambiado"
+    passwords:
+      send_instructions: "Si tu correo existe, recibirás un email con instrucciones para restablecer tu contraseña."
+      send_paranoid_instructions: "Si tu correo existe, recibirás un email con instrucciones para restablecer tu contraseña."
+      updated: "Tu contraseña se actualizó correctamente. Ya puedes iniciar sesión."
+      updated_not_active: "Tu contraseña se actualizó correctamente."
+    registrations:
+      signed_up: "Cuenta creada correctamente."
+      signed_up_but_inactive: "Cuenta creada. Revisa tu correo para activarla."
+      signed_up_but_unconfirmed: "Te enviamos un correo para confirmar tu cuenta."
+      updated: "Tu cuenta se actualizó correctamente."
+      destroyed: "Tu cuenta fue eliminada correctamente."
+    sessions:
+      signed_in: "Sesión iniciada correctamente."
+      signed_out: "Sesión cerrada correctamente."
+      already_signed_out: "Sesión cerrada."
+    unlocks:
+      send_instructions: "Recibirás un correo con instrucciones para desbloquear tu cuenta en unos minutos."
+      send_paranoid_instructions: "Si tu correo existe, recibirás instrucciones para desbloquear tu cuenta."
+      unlocked: "Tu cuenta fue desbloqueada. Inicia sesión para continuar."
+    errors:
+      messages:
+        not_saved:
+          one: "1 error impidió guardar este %{resource}:"
+          other: "%{count} errores impidieron guardar este %{resource}:"

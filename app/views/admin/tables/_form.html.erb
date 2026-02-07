@@ -1,0 +1,35 @@
+<%= form_with model: [:admin, @restaurant, @table], local: true, class: "auth-form" do |f| %>
+  <% if @table.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(@table.errors.count, "error") %> impidieron guardar:</h4>
+      <ul>
+        <% @table.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :number, "Numero de mesa" %>
+      <%= f.number_field :number, class: "form-control", min: 1 %>
+    </div>
+    <div class="form-group">
+      <%= f.label :capacity, "Capacidad" %>
+      <%= f.number_field :capacity, class: "form-control", min: 1 %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>
+      <%= f.check_box :available %>
+      Disponible para reservas
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit "Guardar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_restaurant_tables_path(@restaurant), class: "btn btn-secondary" %>
+  </div>
+<% end %>

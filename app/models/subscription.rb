@@ -7,7 +7,13 @@ class Subscription < ApplicationRecord
 
   validates :plan, :status, presence: true
 
+  scope :active, -> { where(status: "active") }
+
   def price
     price_cents.to_f / 100.0
+  end
+
+  def active?
+    status == "active"
   end
 end

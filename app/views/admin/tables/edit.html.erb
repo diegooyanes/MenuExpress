@@ -1,0 +1,13 @@
+<div class="admin-dashboard">
+  <div class="restaurant-header">
+    <div>
+      <p class="hero-kicker">Editar mesa</p>
+      <h1>Mesa <%= @table.number %></h1>
+      <p class="text-muted"><%= @restaurant.name %></p>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <%= render "form" %>
+  </div>
+</div>

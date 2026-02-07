@@ -1,0 +1,17 @@
+<div class="admin-dashboard">
+  <div class="restaurant-header">
+    <div>
+      <p class="hero-kicker">Resena</p>
+      <h1><%= @review.name %></h1>
+      <p class="text-muted"><%= @restaurant.name %></p>
+    </div>
+    <div class="restaurant-header-actions">
+      <%= link_to "Volver", admin_restaurant_reviews_path(@restaurant), class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <p><strong>Puntuacion:</strong> ★ <%= @review.rating %></p>
+    <p><strong>Comentario:</strong> <%= @review.comment %></p>
+  </div>
+</div>

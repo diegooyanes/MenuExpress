@@ -1,0 +1,38 @@
+<%= form_with model: [:admin, @restaurant, @menu_item], local: true, class: "auth-form" do |f| %>
+  <% if @menu_item.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(@menu_item.errors.count, "error") %> impidieron guardar:</h4>
+      <ul>
+        <% @menu_item.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :name, "Nombre del plato" %>
+      <%= f.text_field :name, class: "form-control", required: true %>
+    </div>
+    <div class="form-group">
+      <%= f.label :category, "Categoria" %>
+      <%= f.text_field :category, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description, "Descripcion" %>
+    <%= f.text_area :description, class: "form-control", rows: 3 %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :price, "Precio" %>
+    <%= f.number_field :price, class: "form-control", step: 0.01, min: 0 %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit "Guardar", class: "btn btn-primary" %>
+    <%= link_to "Cancelar", admin_restaurant_menu_items_path(@restaurant), class: "btn btn-secondary" %>
+  </div>
+<% end %>

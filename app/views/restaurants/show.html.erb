@@ -1,10 +1,77 @@
-<% hero_image = @restaurant.photos.first ? url_for(@restaurant.photos.first.variant(resize_to_fill: [1200, 400])) : 'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1200&h=400&fit=crop' %>
-<div class="restaurant-hero" style="background-image: url('<%= hero_image %>');">
+<% hero_image =
+  if @restaurant.cover_image.attached?
+    url_for(@restaurant.cover_image)
+  elsif @restaurant.photos.first
+    url_for(@restaurant.photos.first)
+  elsif @restaurant.logo.to_s.start_with?("http://", "https://")
+    @restaurant.logo
+  else
+    'https://images.unsplash.com/photo-1495521821757-a1efb6729352?w=1200&h=400&fit=crop'
+  end
+%>
+<div class="restaurant-hero">
+  <div class="restaurant-hero-bg" style="background-image: url('<%= hero_image %>');"></div>
   <div class="restaurant-info-overlay">
     <h1><%= @restaurant.name %></h1>
     <p><%= @restaurant.address || "Ubicación" %></p>
   </div>
 </div>
+
+<script>
+  (function() {
+    function initCarousel() {
+      var carousel = document.querySelector('[data-carousel]');
+      if (!carousel) return;
+      if (carousel.dataset.bound === 'true') return;
+      carousel.dataset.bound = 'true';
+
+      var track = carousel.querySelector('[data-carousel-track]');
+      var slides = carousel.querySelectorAll('.carousel-slide');
+      var prev = carousel.querySelector('[data-carousel-prev]');
+      var next = carousel.querySelector('[data-carousel-next]');
+      if (!track || slides.length === 0) return;
+
+      var index = 0;
+      var total = slides.length;
+      var intervalId = null;
+
+      function update() {
+        track.style.transform = 'translateX(' + (-index * 100) + '%)';
+      }
+
+      function goNext() {
+        index = (index + 1) % total;
+        update();
+      }
+
+      function goPrev() {
+        index = (index - 1 + total) % total;
+        update();
+      }
+
+      function startAuto() {
+        if (total <= 1) return;
+        intervalId = setInterval(goNext, 5000);
+      }
+
+      function stopAuto() {
+        if (intervalId) clearInterval(intervalId);
+      }
+
+      if (next) next.addEventListener('click', function() { stopAuto(); goNext(); startAuto(); });
+      if (prev) prev.addEventListener('click', function() { stopAuto(); goPrev(); startAuto(); });
+
+      carousel.addEventListener('mouseenter', stopAuto);
+      carousel.addEventListener('mouseleave', startAuto);
+
+      update();
+      startAuto();
+    }
+
+    document.addEventListener('DOMContentLoaded', initCarousel);
+    document.addEventListener('turbo:load', initCarousel);
+  })();
+</script>
 
 <div class="container">
   <div class="restaurant-details">
@@ -14,7 +81,17 @@
       
       <div class="detail-item">
         <span class="detail-label">Dirección</span>
-        <span class="detail-value"><%= @restaurant.address || "N/A" %></span>
+        <% if @restaurant.address.present? %>
+          <span class="detail-value">
+            <%= link_to "Ver en Google Maps",
+                        "https://www.google.com/maps/search/?api=1&query=#{ERB::Util.url_encode(@restaurant.address)}",
+                        target: "_blank",
+                        rel: "noopener",
+                        class: "link" %>
+          </span>
+        <% else %>
+          <span class="detail-value">N/A</span>
+        <% end %>
       </div>
       
       <div class="detail-item">
@@ -30,17 +107,14 @@
 
       <div class="detail-item">
         <span class="detail-label">Teléfono</span>
-        <span class="detail-value">+34 123 456 789</span>
+        <span class="detail-value"><%= @restaurant.phone_number.presence || "N/A" %></span>
       </div>
 
       <div class="detail-item">
-        <span class="detail-label">Capacidad</span>
-        <span class="detail-value"><%= @restaurant.tables.sum(:capacity) %> personas</span>
-      </div>
-
-      <div class="detail-item">
-        <span class="detail-label">Mesas disponibles</span>
-        <span class="detail-value"><%= @restaurant.tables.where(available: true).count %> / <%= @restaurant.tables.count %></span>
+        <span class="detail-label">Aforo maximo</span>
+        <span class="detail-value">
+          <%= @restaurant.max_capacity.to_i.positive? ? "#{@restaurant.max_capacity} personas" : "N/A" %>
+        </span>
       </div>
     </aside>
 
@@ -53,24 +127,52 @@
 
       <!-- Menú -->
       <h2>🍽️ Menú</h2>
-      <div class="menu-items">
-        <% @restaurant.menu_items.each do |item| %>
-          <div class="menu-item-card">
-            <h4><%= item.name %></h4>
-            <p><%= item.description || "Delicioso platillo" %></p>
-            <div class="menu-item-price">$<%= number_with_precision(item.price, precision: 2) %></div>
+      <% if @restaurant.menu_file.attached? %>
+        <div class="menu-file-card">
+          <p class="text-muted">Consulta el menú del restaurante.</p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-primary" data-modal-open="menu-modal-public">Ver menú</button>
+            <%= link_to "Descargar", url_for(@restaurant.menu_file), class: "btn btn-secondary", target: "_blank", rel: "noopener" %>
           </div>
-        <% end %>
-      </div>
+        </div>
+      <% else %>
+        <p class="text-muted">Este restaurante aun no publico su menú.</p>
+      <% end %>
 
-      <!-- Botones de acción -->
-      <div class="action-buttons">
-        <%= link_to "📅 Hacer una Reserva", new_restaurant_reservation_path(@restaurant), class: "btn btn-primary" %>
-        <%= link_to "⭐ Escribir Reseña", new_restaurant_review_path(@restaurant), class: "btn btn-secondary" %>
-      </div>
+      <!-- Formulario de reserva -->
+      <% if @restaurant.reservations_enabled? %>
+        <div class="reservation-form">
+          <h2>Reserva tu mesa</h2>
+          <%= render "reservations/form" %>
+
+          <% if @restaurant.photos.attached? %>
+            <div class="reservation-carousel" data-carousel>
+              <div class="carousel-header">
+                <h3>Fotos del restaurante</h3>
+                <div class="carousel-controls">
+                  <button type="button" class="carousel-btn" data-carousel-prev aria-label="Anterior">‹</button>
+                  <button type="button" class="carousel-btn" data-carousel-next aria-label="Siguiente">›</button>
+                </div>
+              </div>
+              <div class="carousel-viewport">
+                <div class="carousel-track" data-carousel-track>
+                  <% @restaurant.photos.each_with_index do |photo, index| %>
+                    <div class="carousel-slide">
+                      <%= image_tag photo, alt: "Foto #{index + 1} de #{@restaurant.name}", loading: "lazy" %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">Las reservas estan deshabilitadas por este restaurante.</p>
+      <% end %>
 
       <!-- Reseñas -->
       <h2>⭐ Reseñas</h2>
+      <p class="text-muted">Promedio: <strong><%= @restaurant.average_rating %></strong> / 5 · <%= @restaurant.reviews.count %> opiniones</p>
       <div class="reviews-section">
         <% if @restaurant.reviews.any? %>
           <% @restaurant.reviews.each do |review| %>
@@ -80,12 +182,44 @@
                 <span class="review-rating">★ <%= review.rating %>/5</span>
               </div>
               <p class="review-text"><%= review.comment %></p>
+              <% if review.photo.attached? %>
+                <%= image_tag review.photo, class: "review-photo", alt: "Foto de reseña" %>
+              <% end %>
+              <% if user_signed_in? && review.user_id == current_user.id %>
+                <div class="review-actions">
+                  <%= button_to "Eliminar",
+                                restaurant_review_path(@restaurant, review),
+                                method: :delete,
+                                class: "btn btn-ghost btn-sm",
+                                data: { confirm: "Eliminar esta reseña?" } %>
+                </div>
+              <% end %>
             </div>
           <% end %>
         <% else %>
           <p class="text-muted">Sin reseñas aún. ¡Sé el primero!</p>
         <% end %>
       </div>
+
+      <div class="action-buttons">
+        <%= link_to "⭐ Escribir Reseña", new_restaurant_review_path(@restaurant), class: "btn btn-secondary" %>
+      </div>
     </section>
   </div>
 </div>
+
+<% if @restaurant.menu_file.attached? %>
+  <div class="menu-modal" id="menu-modal-public" data-modal>
+    <div class="menu-modal-backdrop" data-modal-close></div>
+    <div class="menu-modal-card">
+      <button type="button" class="menu-modal-close" data-modal-close>×</button>
+      <h3>Menú</h3>
+      <% if @restaurant.menu_file.content_type == "application/pdf" %>
+        <iframe src="<%= url_for(@restaurant.menu_file) %>" class="menu-modal-frame"></iframe>
+      <% else %>
+        <p class="text-muted">Este archivo no se puede previsualizar. Descárgalo para verlo.</p>
+        <%= link_to "Descargar menú", url_for(@restaurant.menu_file), class: "btn btn-primary", target: "_blank", rel: "noopener" %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

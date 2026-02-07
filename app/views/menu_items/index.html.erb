@@ -1,2 +1,26 @@
-<h1>MenuItems#index</h1>
-<p>Find me in app/views/menu_items/index.html.erb</p>
+<div class="container">
+  <div class="dashboard-header">
+    <div>
+      <p class="hero-kicker">Menu</p>
+      <h1><%= @restaurant.name %></h1>
+      <p class="text-muted">Explora los platos disponibles.</p>
+    </div>
+    <div class="dashboard-actions">
+      <%= link_to "Volver al restaurante", restaurant_path(@restaurant), class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <% if @menu_items.any? %>
+    <div class="menu-items">
+      <% @menu_items.each do |item| %>
+        <div class="menu-item-card">
+          <h4><%= item.name %></h4>
+          <p><%= item.description.presence || "Descripcion pendiente" %></p>
+          <div class="menu-item-price">$<%= number_with_precision(item.price, precision: 2) %></div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="empty-message">Este restaurante aun no tiene platos cargados.</p>
+  <% end %>
+</div>

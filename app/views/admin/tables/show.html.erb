@@ -1,0 +1,18 @@
+<div class="admin-dashboard">
+  <div class="restaurant-header">
+    <div>
+      <p class="hero-kicker">Mesa</p>
+      <h1>Mesa <%= @table.number %></h1>
+      <p class="text-muted"><%= @restaurant.name %></p>
+    </div>
+    <div class="restaurant-header-actions">
+      <%= link_to "Editar", edit_admin_restaurant_table_path(@restaurant, @table), class: "btn btn-secondary" %>
+      <%= link_to "Volver", admin_restaurant_tables_path(@restaurant), class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <p><strong>Capacidad:</strong> <%= @table.capacity %> personas</p>
+    <p><strong>Disponible:</strong> <%= @table.available? ? "Si" : "No" %></p>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+es:
+  activerecord:
+    errors:
+      messages:
+        taken: "ya está en uso"
+        blank: "no puede estar en blanco"
+        invalid: "no es válido"
+    attributes:
+      user:
+        email: "Correo"
+        password: "Contraseña"
+        password_confirmation: "Confirmar contraseña"
+      restaurant:
+        email: "Correo"
+        password: "Contraseña"
+        password_confirmation: "Confirmar contraseña"
+  errors:
+    format: "%{attribute} %{message}"

@@ -1,0 +1,46 @@
+<div class="admin-dashboard">
+  <div class="restaurant-header">
+    <div>
+      <p class="hero-kicker">Mesas</p>
+      <h1>Mesas de <%= @restaurant.name %></h1>
+      <p class="text-muted">Organiza la capacidad y disponibilidad.</p>
+    </div>
+    <div class="restaurant-header-actions">
+      <%= link_to "Volver", admin_restaurant_path(@restaurant), class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <% if @tables.any? %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Mesa</th>
+            <th>Capacidad</th>
+            <th>Disponible</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tables.each do |table| %>
+            <tr>
+              <td>Mesa <%= table.number %></td>
+              <td><%= table.capacity %> personas</td>
+              <td><%= table.available? ? "Si" : "No" %></td>
+              <td>
+                <%= link_to "Editar", edit_admin_restaurant_table_path(@restaurant, table), class: "btn btn-secondary btn-sm" %>
+                <%= button_to "Eliminar", admin_restaurant_table_path(@restaurant, table), method: :delete, class: "btn btn-danger btn-sm", data: { confirm: "Eliminar esta mesa?" } %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="empty-message">Aun no tienes mesas registradas.</p>
+    <% end %>
+  </div>
+</div>
+
+<%= link_to new_admin_restaurant_table_path(@restaurant), class: "fab", aria: { label: "Agregar mesa" } do %>
+  +
+<% end %>

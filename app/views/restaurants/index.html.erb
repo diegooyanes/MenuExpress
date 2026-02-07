@@ -1,33 +1,169 @@
-<main class="container">
-  <h2>Restaurantes disponibles</h2>
-  
-  <!-- Search Bar -->
-  <div class="search-bar-container">
-    <%= form_with url: restaurants_path, method: :get, local: true, class: "search-bar-form" do |f| %>
-      <%= f.text_field :search, placeholder: "🔍 Buscar restaurante por nombre...", class: "search-bar-input", value: params[:search] %>
-    <% end %>
-  </div>
-  
-  <div class="restaurants-grid">
-    <% @restaurants.each do |restaurant| %>
-      <%= link_to restaurant_path(restaurant), class: "restaurant-card-link" do %>
-        <div class="restaurant-image">
-          <% image_src = restaurant.logo || (restaurant.photos.attached? ? url_for(restaurant.photos.first) : 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1470&q=80') %>
-          <%= image_tag image_src, alt: restaurant.name, loading: "lazy" %>
-          <div class="image-overlay"></div>
+<main class="landing">
+  <section class="landing-hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <p class="hero-kicker">MenuExpress</p>
+        <h1>La forma elegante de gestionar menú, mesas y reservas en un solo lugar.</h1>
+        <p class="hero-subtitle">
+          Diseñado para restaurantes que quieren claridad operativa, menos caos y más reservas confirmadas.
+        </p>
+        <div class="hero-actions">
+          <% if restaurant_signed_in? %>
+            <%= link_to "Ir al Dashboard", admin_restaurant_path(current_restaurant), class: "btn btn-primary" %>
+            <%= link_to "Editar Perfil", edit_admin_restaurant_path(current_restaurant), class: "btn btn-secondary" %>
+          <% elsif user_signed_in? %>
+            <%= link_to "Explorar restaurantes", restaurants_path, class: "btn btn-primary" %>
+          <% else %>
+            <%= link_to "Crear cuenta", new_user_registration_path, class: "btn btn-primary" %>
+            <%= link_to "Iniciar sesión", new_user_session_path, class: "btn btn-secondary" %>
+          <% end %>
         </div>
-
-        <div class="restaurant-block">
-          <h3 class="restaurant-title"><%= restaurant.name %></h3>
-          <p class="restaurant-desc"><%= truncate(restaurant.description, length: 140) %></p>
-          <div class="restaurant-meta">
-            <span>Horario: <%= restaurant.open_time.strftime("%H:%M") %> - <%= restaurant.close_time.strftime("%H:%M") %></span>
+        <div class="hero-metrics">
+          <div>
+            <strong>+24%</strong>
+            <span>menos cancelaciones</span>
+          </div>
+          <div>
+            <strong>1 min</strong>
+            <span>para crear una reserva</span>
+          </div>
+          <div>
+            <strong>24/7</strong>
+            <span>control del negocio</span>
           </div>
         </div>
-      <% end %>
-    <% end %>
-  </div>
-  <footer>
-    &copy; <%= Time.now.year %> MenuExpress
+      </div>
+      <div class="hero-panel">
+        <div class="hero-card">
+          <h3>Panel de Reservas</h3>
+          <p>Vistas claras, estados y contacto inmediato con clientes.</p>
+          <div class="hero-card-row">
+            <span class="pill">Pendiente</span>
+            <span class="pill pill-soft">Confirmada</span>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h3>Menú Digital</h3>
+          <p>Actualiza platos y precios sin tocar código.</p>
+          <div class="hero-card-row">
+            <span class="mini-stat">12 platos</span>
+            <span class="mini-stat">2 categorías</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <% unless restaurant_signed_in? %>
+    <section class="landing-section">
+      <div class="container">
+        <div class="section-header">
+          <div>
+            <h2>Restaurantes disponibles</h2>
+            <p class="text-muted">Descubre restaurantes y reserva en segundos.</p>
+          </div>
+          <div class="search-bar-container">
+            <%= form_with url: restaurants_path, method: :get, local: true, class: "search-bar-form" do |f| %>
+              <%= f.text_field :search, placeholder: "Buscar restaurante", class: "search-bar-input", value: params[:search] %>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="restaurants-grid">
+          <% @restaurants.each do |restaurant| %>
+            <%= link_to restaurant_path(restaurant), class: "restaurant-card-link" do %>
+              <div class="restaurant-image">
+              <% logo_url = restaurant.logo if restaurant.logo.to_s.start_with?("http://", "https://") %>
+              <% image_src =
+                if restaurant.cover_image.attached?
+                  url_for(restaurant.cover_image)
+                elsif restaurant.photos.attached?
+                  url_for(restaurant.photos.first)
+                else
+                  logo_url || 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1470&q=80'
+                end
+              %>
+                <%= image_tag image_src, alt: restaurant.name, loading: "lazy" %>
+                <div class="image-overlay"></div>
+              </div>
+
+              <div class="restaurant-block">
+                <h3 class="restaurant-title"><%= restaurant.name %></h3>
+                <p class="restaurant-desc"><%= truncate(restaurant.description, length: 140) %></p>
+                <div class="restaurant-meta">
+                  <% if restaurant.open_time && restaurant.close_time %>
+                    <span>Horario: <%= restaurant.open_time.strftime("%H:%M") %> - <%= restaurant.close_time.strftime("%H:%M") %></span>
+                  <% else %>
+                    <span>Horario: N/A</span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  <% end %>
+
+  <section class="landing-section alt">
+    <div class="container">
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Reservas sin fricción</h3>
+          <p>Clientes reservan rápido y tú tienes control total del flujo.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Operación clara</h3>
+          <p>Aforo, horarios y estados en un tablero simple y ordenado.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Confianza y control</h3>
+          <p>Acceso privado para cada restaurante, sin mezclar datos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="landing-section">
+    <div class="container">
+      <div class="dashboard-header">
+        <div>
+          <p class="hero-kicker">Contacto</p>
+          <h2>Habla con nuestro equipo</h2>
+          <p class="text-muted">Te ayudamos a activar MenuExpress en minutos.</p>
+        </div>
+      </div>
+      <div class="module-card">
+        <p><strong>Email:</strong> soporte@menuexpress.app</p>
+        <p><strong>WhatsApp:</strong> +34 600 000 000</p>
+        <p class="text-muted">Horario de soporte: 9:00 - 18:00 (Lunes a Viernes)</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section alt">
+    <div class="container">
+      <div class="dashboard-header">
+        <div>
+          <p class="hero-kicker">Solo restaurantes</p>
+          <h2>Acceso para restaurantes</h2>
+          <p class="text-muted">Gestiona tu menú, mesas y reservas desde el panel privado.</p>
+        </div>
+        <div class="dashboard-actions">
+          <%= link_to "Iniciar sesión", new_restaurant_session_path, class: "btn btn-primary" %>
+          <%= link_to "Crear cuenta", new_restaurant_registration_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+      <div class="module-card">
+        <p class="text-muted">Si ya tienes cuenta de restaurante, entra al panel para administrar tu negocio.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>&copy; <%= Time.now.year %> MenuExpress</span>
+      <span class="text-muted">Hecho para restaurantes modernos.</span>
+    </div>
   </footer>
 </main>

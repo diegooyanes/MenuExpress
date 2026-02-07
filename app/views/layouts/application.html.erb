@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Menu Express" %></title>
+    <title><%= content_for(:title) || "MenuExpress" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Menu Express">
@@ -14,28 +14,68 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="<%= asset_path 'Logo.png' %>" type="image/png">
+    <link rel="apple-touch-icon" href="<%= asset_path 'Logo.png' %>">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-      <%= render "shared/navbar" %>
-    <%= yield %>
+  <body class="<%= restaurant_signed_in? ? 'is-auth' : 'is-public' %> <%= controller_path.start_with?('admin/') ? 'is-admin' : '' %>">
+    <%= render "shared/navbar" %>
+    <% if flash.any? %>
+      <div class="flash-stack">
+        <% flash.each do |type, message| %>
+          <div class="flash-message flash-<%= type %>"><%= message %></div>
+        <% end %>
+      </div>
+    <% end %>
+    <% if controller_path.start_with?('admin/') && restaurant_signed_in? %>
+      <div class="app-shell">
+        <aside class="sidebar">
+          <div class="sidebar-brand">
+            <span class="sidebar-logo">
+              <%= image_tag "Logo.png", alt: "MenuExpress", class: "sidebar-logo-image" %>
+            </span>
+            <div>
+              <strong>MenuExpress</strong>
+              <small>Panel</small>
+            </div>
+          </div>
+          <nav class="sidebar-nav">
+            <%= link_to "Dashboard", admin_restaurant_path(current_restaurant), class: "sidebar-link" %>
+            <%= link_to "Reservas", admin_restaurant_reservations_path(current_restaurant), class: "sidebar-link" %>
+            <%= link_to "Menú", admin_restaurant_menu_items_path(current_restaurant), class: "sidebar-link" %>
+            <%= link_to "Reseñas", admin_restaurant_reviews_path(current_restaurant), class: "sidebar-link" %>
+            <%= link_to "Perfil", edit_admin_restaurant_path(current_restaurant), class: "sidebar-link" %>
+          </nav>
+          <div class="sidebar-footer">
+            <span class="pill">Cuenta activa</span>
+            <%= button_to "Salir", destroy_restaurant_session_path, method: :delete, class: "btn btn-secondary btn-sm", form: { class: "sidebar-logout" } %>
+          </div>
+        </aside>
+        <main class="app-content">
+          <%= yield %>
+        </main>
+      </div>
+    <% else %>
+      <%= yield %>
+    <% end %>
 
     <script>
-      // Hamburger menu toggle with smooth animation
-      document.addEventListener('DOMContentLoaded', function(){
+      // Hamburger menu toggle with smooth animation (works with Turbo)
+      function initNavbarMenu() {
         var burger = document.querySelector('.navbar-burger');
         var navbar = document.querySelector('.navbar');
         var menuLinks = document.querySelectorAll('.navbar-menu .navbar-link');
-        
+
         if(!burger || !navbar) return;
-        
+
+        // Avoid double-binding on Turbo visits
+        if (burger.dataset.bound === 'true') return;
+        burger.dataset.bound = 'true';
+
         // Toggle menu on burger click
         burger.addEventListener('click', function(e){
           e.preventDefault();
@@ -43,7 +83,7 @@
           this.setAttribute('aria-expanded', (!expanded).toString());
           navbar.classList.toggle('open');
         });
-        
+
         // Close menu when clicking a link
         menuLinks.forEach(function(link){
           link.addEventListener('click', function(){
@@ -51,7 +91,7 @@
             navbar.classList.remove('open');
           });
         });
-        
+
         // Close menu when clicking outside
         document.addEventListener('click', function(e){
           if(!navbar.contains(e.target) && navbar.classList.contains('open')){
@@ -59,6 +99,208 @@
             navbar.classList.remove('open');
           }
         });
+      }
+
+      function initModals() {
+        document.querySelectorAll('[data-modal-open]').forEach(function(btn) {
+          if (btn.dataset.bound === 'true') return;
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', function() {
+            var id = btn.getAttribute('data-modal-open');
+            var modal = document.getElementById(id);
+            if (modal) modal.classList.add('is-open');
+          });
+        });
+
+        document.querySelectorAll('[data-modal-close]').forEach(function(el) {
+          if (el.dataset.bound === 'true') return;
+          el.dataset.bound = 'true';
+          el.addEventListener('click', function() {
+            var modal = el.closest('[data-modal]');
+            if (modal) modal.classList.remove('is-open');
+          });
+        });
+
+        document.querySelectorAll('[data-confirm-submit]').forEach(function(btn) {
+          if (btn.dataset.bound === 'true') return;
+          btn.dataset.bound = 'true';
+          btn.addEventListener('click', function() {
+            var formId = btn.getAttribute('data-confirm-submit');
+            var form = document.getElementById(formId);
+            if (form) form.submit();
+          });
+        });
+      }
+
+      function initDatepickers() {
+        var inputs = document.querySelectorAll('input[data-datepicker="true"]');
+        if (!inputs.length) return;
+
+        var monthNames = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+        var dayNames = ["Lu","Ma","Mi","Ju","Vi","Sa","Do"];
+
+        function parseValue(value) {
+          var parts = value.split("/");
+          if (parts.length !== 3) return null;
+          var day = parseInt(parts[0], 10);
+          var month = parseInt(parts[1], 10) - 1;
+          var year = parseInt(parts[2], 10);
+          if (!day || month < 0 || month > 11 || !year) return null;
+          return new Date(year, month, day);
+        }
+
+        function formatDate(date) {
+          var dd = String(date.getDate()).padStart(2, "0");
+          var mm = String(date.getMonth() + 1).padStart(2, "0");
+          var yyyy = date.getFullYear();
+          return dd + "/" + mm + "/" + yyyy;
+        }
+
+        function buildPicker(input) {
+          var popup = document.createElement("div");
+          popup.className = "datepicker-popup";
+          popup.innerHTML = `
+            <div class="datepicker-header">
+              <div class="datepicker-title"></div>
+              <div class="datepicker-nav">
+                <button type="button" class="datepicker-btn" data-nav="-1">‹</button>
+                <button type="button" class="datepicker-btn" data-nav="1">›</button>
+              </div>
+            </div>
+            <div class="datepicker-grid datepicker-days"></div>
+          `;
+
+          document.body.appendChild(popup);
+
+          var current = parseValue(input.value) || new Date();
+          var selected = parseValue(input.value);
+
+          function render() {
+            var year = current.getFullYear();
+            var month = current.getMonth();
+            popup.querySelector(".datepicker-title").textContent = monthNames[month] + " " + year;
+
+            var grid = popup.querySelector(".datepicker-days");
+            grid.innerHTML = "";
+
+            dayNames.forEach(function(d) {
+              var el = document.createElement("div");
+              el.className = "datepicker-day";
+              el.textContent = d;
+              grid.appendChild(el);
+            });
+
+            var firstDay = new Date(year, month, 1);
+            var startWeekday = (firstDay.getDay() + 6) % 7;
+            var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (var i = 0; i < startWeekday; i++) {
+              var empty = document.createElement("div");
+              grid.appendChild(empty);
+            }
+
+            var today = new Date();
+            for (var day = 1; day <= daysInMonth; day++) {
+              (function(d) {
+                var cell = document.createElement("div");
+                cell.className = "datepicker-cell";
+                cell.textContent = d;
+                var cellDate = new Date(year, month, d);
+                if (today.toDateString() === cellDate.toDateString()) {
+                  cell.classList.add("is-today");
+                }
+                if (selected && selected.toDateString() === cellDate.toDateString()) {
+                  cell.classList.add("is-selected");
+                }
+                cell.addEventListener("click", function() {
+                  selected = cellDate;
+                  input.value = formatDate(cellDate);
+                  hide();
+                });
+                grid.appendChild(cell);
+              })(day);
+            }
+          }
+
+          function position() {
+            var rect = input.getBoundingClientRect();
+            popup.style.top = (window.scrollY + rect.bottom + 6) + "px";
+            popup.style.left = (window.scrollX + rect.left) + "px";
+          }
+
+          function show() {
+            render();
+            position();
+            popup.style.display = "block";
+          }
+
+          function hide() {
+            popup.style.display = "none";
+          }
+
+          popup.addEventListener("click", function(e) {
+            var nav = e.target.getAttribute("data-nav");
+            if (!nav) return;
+            current.setMonth(current.getMonth() + parseInt(nav, 10));
+            render();
+          });
+
+          document.addEventListener("click", function(e) {
+            if (e.target === input || popup.contains(e.target)) return;
+            hide();
+          });
+
+          input.addEventListener("focus", show);
+          window.addEventListener("resize", position);
+
+          hide();
+        }
+
+        inputs.forEach(function(input) {
+          if (input.dataset.bound === "true") return;
+          input.dataset.bound = "true";
+          buildPicker(input);
+        });
+      }
+
+      function initFileInputs() {
+        document.querySelectorAll('.file-input').forEach(function(wrapper) {
+          var input = wrapper.querySelector('.file-control');
+          var label = wrapper.querySelector('.file-label');
+          var name = wrapper.querySelector('.file-name');
+          if (!input || !label || !name) return;
+          if (input.dataset.bound === 'true') return;
+          input.dataset.bound = 'true';
+
+          label.addEventListener('click', function() {
+            input.click();
+          });
+
+          input.addEventListener('change', function() {
+            if (!input.files || input.files.length === 0) {
+              name.textContent = "Sin archivo";
+              return;
+            }
+            if (input.files.length === 1) {
+              name.textContent = input.files[0].name;
+            } else {
+              name.textContent = input.files.length + " archivos seleccionados";
+            }
+          });
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+        initNavbarMenu();
+        initModals();
+        initDatepickers();
+        initFileInputs();
+      });
+      document.addEventListener('turbo:load', function() {
+        initNavbarMenu();
+        initModals();
+        initDatepickers();
+        initFileInputs();
       });
     </script>
   </body>

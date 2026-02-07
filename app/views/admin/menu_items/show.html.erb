@@ -1,0 +1,19 @@
+<div class="admin-dashboard">
+  <div class="restaurant-header">
+    <div>
+      <p class="hero-kicker">Menu</p>
+      <h1><%= @menu_item.name %></h1>
+      <p class="text-muted"><%= @restaurant.name %></p>
+    </div>
+    <div class="restaurant-header-actions">
+      <%= link_to "Editar", edit_admin_restaurant_menu_item_path(@restaurant, @menu_item), class: "btn btn-secondary" %>
+      <%= link_to "Volver", admin_restaurant_menu_items_path(@restaurant), class: "btn btn-primary" %>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <p><strong>Categoria:</strong> <%= @menu_item.category.presence || "General" %></p>
+    <p><strong>Precio:</strong> $<%= number_with_precision(@menu_item.price, precision: 2) %></p>
+    <p><strong>Descripcion:</strong> <%= @menu_item.description.presence || "Sin descripcion" %></p>
+  </div>
+</div>

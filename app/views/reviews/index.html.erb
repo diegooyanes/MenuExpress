@@ -1,2 +1,41 @@
-<h1>Reviews#index</h1>
-<p>Find me in app/views/reviews/index.html.erb</p>
+<div class="container">
+  <div class="dashboard-header">
+    <div>
+      <p class="hero-kicker">Resenas</p>
+      <h1><%= @restaurant.name %></h1>
+      <p class="text-muted">Opiniones reales de los clientes.</p>
+    </div>
+    <div class="dashboard-actions">
+      <%= link_to "Escribir resena", new_restaurant_review_path(@restaurant), class: "btn btn-primary" %>
+      <%= link_to "Volver al restaurante", restaurant_path(@restaurant), class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <% if @reviews.any? %>
+    <div class="reviews-section">
+      <% @reviews.each do |review| %>
+        <div class="review-item">
+          <div class="review-header">
+            <span class="review-author"><%= review.name %></span>
+            <span class="review-rating">★ <%= review.rating %>/5</span>
+          </div>
+          <p class="review-text"><%= review.comment %></p>
+          <% if review.photo.attached? %>
+            <%= image_tag review.photo, class: "review-photo", alt: "Foto de reseña" %>
+          <% end %>
+          <% if user_signed_in? && review.user_id == current_user.id %>
+            <div class="review-actions">
+              <%= button_to "Eliminar",
+                            restaurant_review_path(@restaurant, review),
+                            method: :delete,
+                            class: "btn btn-ghost btn-sm",
+                            data: { confirm: "Eliminar esta reseña?" } %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="empty-message">Aun no hay resenas. Se el primero en dejar una.</p>
+  <% end %>
+</div>

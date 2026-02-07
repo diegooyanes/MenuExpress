@@ -1,0 +1,13 @@
+<div class="admin-dashboard">
+  <div class="restaurant-header">
+    <div>
+      <p class="hero-kicker">Editar plato</p>
+      <h1><%= @menu_item.name %></h1>
+      <p class="text-muted"><%= @restaurant.name %></p>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <%= render "form" %>
+  </div>
+</div>

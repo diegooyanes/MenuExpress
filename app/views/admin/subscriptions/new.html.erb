@@ -1,28 +1,26 @@
-<div class="card">
-  <div class="card-header">
-    <h2>Suscripción - $15 / mes</h2>
+<div class="container">
+  <div class="dashboard-header">
+    <div>
+      <p class="hero-kicker">Suscripcion</p>
+      <h1>Activa tu cuenta</h1>
+      <p class="text-muted">Necesitas una suscripcion para administrar tu restaurante.</p>
+    </div>
   </div>
 
-  <div class="card-body">
-    <p>Esta es una simulación del flujo de pago. Para producción debes integrar una pasarela (Stripe, PayPal, etc.).</p>
-    <ul>
-      <li>Plan: Mensual</li>
-      <li>Precio: $15.00 USD/mes</li>
+  <div class="module-card">
+    <h2>Plan mensual</h2>
+    <p class="text-muted">Incluye gestion de reservas, menu, mesas y soporte.</p>
+    <ul class="text-muted">
+      <li>Reservas con calendario</li>
+      <li>Menu editable</li>
+      <li>Gestion de mesas</li>
     </ul>
 
     <%= form_with url: admin_restaurant_subscriptions_path(@restaurant), method: :post do %>
-      <%= hidden_field_tag :plan, 'monthly' %>
-      <p>
-        <!-- Placeholder for card fields -->
-        <label>Nombre en la tarjeta</label>
-        <input type="text" name="card_name" placeholder="Nombre en la tarjeta" class="form-control" />
-      </p>
-      <p>
-        <label>Número de tarjeta (simulado)</label>
-        <input type="text" name="card_number" placeholder="4242 4242 4242 4242" class="form-control" />
-      </p>
-
-      <%= submit_tag "Pagar $15 (Simulación)", class: "btn btn-primary" %>
+      <%= hidden_field_tag :plan, "monthly" %>
+      <%= submit_tag "Pagar $15/mes", class: "btn btn-primary" %>
     <% end %>
+
+    <p class="text-muted mt-2">Pago seguro procesado con Stripe.</p>
   </div>
 </div>

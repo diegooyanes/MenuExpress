@@ -1,13 +1,43 @@
 class Admin::ReservationsController < ApplicationController
   before_action :authenticate_restaurant!
+  before_action :require_active_subscription!
   before_action :set_restaurant
   before_action :authorize_restaurant!
   before_action :set_reservation, only: [:show, :edit, :update]
 
   # GET /admin/restaurants/:restaurant_id/reservations
   def index
-    @upcoming_reservations = @restaurant.reservations.upcoming.order(:reservation_date)
+    @upcoming_reservations = @restaurant.reservations.upcoming.order(:reservation_date, :reservation_time)
     @past_reservations = @restaurant.reservations.past.order(reservation_date: :desc)
+
+    base_date =
+      if params[:date].present?
+        Date.parse(params[:date]) rescue Date.current
+      else
+        Date.current
+      end
+    @calendar_view = params[:view] == "month" ? "month" : "week"
+
+    if @calendar_view == "month"
+      start_date = base_date.beginning_of_month.beginning_of_week(:monday)
+      end_date = base_date.end_of_month.end_of_week(:monday)
+      @calendar_days = (start_date..end_date).to_a
+    else
+      start_date = base_date.beginning_of_week(:monday)
+      @calendar_days = (0..6).map { |i| start_date + i }
+    end
+
+    total_capacity = @restaurant.max_capacity.to_i
+    daily_counts = @restaurant.reservations
+                              .where(reservation_date: @calendar_days)
+                              .where.not(status: "cancelled")
+                              .group(:reservation_date)
+                              .sum(:number_of_guests)
+    @fully_booked_days = if total_capacity.positive?
+                           daily_counts.select { |_, count| count >= total_capacity }.keys
+                         else
+                           []
+                         end
   end
 
   # GET /admin/restaurants/:restaurant_id/reservations/:id

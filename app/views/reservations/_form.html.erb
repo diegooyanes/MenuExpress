@@ -1,0 +1,89 @@
+<%= form_with(model: [@restaurant, @reservation], local: true, class: "reservation-form__form", id: "reservation-form") do |form| %>
+  <% if @reservation.errors.any? %>
+    <div id="error_explanation" class="alert alert-danger">
+      <h4><%= pluralize(@reservation.errors.count, "error") %> prohibieron esta reserva:</h4>
+      <ul>
+        <% @reservation.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <%= form.label :first_name, "Nombre" %>
+      <%= form.text_field :first_name, class: "form-control", required: true %>
+    </div>
+
+    <div class="form-group col-md-6">
+      <%= form.label :last_name, "Apellidos" %>
+      <%= form.text_field :last_name, class: "form-control", required: true %>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <%= form.label :phone_number, "Teléfono" %>
+      <%= form.telephone_field :phone_number, class: "form-control", required: true %>
+    </div>
+
+    <div class="form-group col-md-6">
+      <%= form.label :number_of_guests, "Número de personas" %>
+      <%= form.number_field :number_of_guests, class: "form-control", min: 1, max: (@restaurant.max_capacity.presence || 20), required: true %>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <%= form.label :email, "Correo" %>
+      <%= form.email_field :email, class: "form-control", required: true, value: (current_user&.email || form.object.email) %>
+    </div>
+    <div class="form-group col-md-6">
+      <%= form.label :reservation_date, "Fecha" %>
+      <%= form.text_field :reservation_date,
+                          value: (@selected_date || @reservation.reservation_date)&.strftime("%d/%m/%Y"),
+                          class: "form-control",
+                          placeholder: "dd/mm/aaaa",
+                          data: { datepicker: "true" },
+                          autocomplete: "off",
+                          required: true %>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <%= form.label :reservation_time, "Hora" %>
+      <% if @available_times.present? %>
+        <%= form.select :reservation_time,
+                        options_for_select(@available_times.map { |t| [t.strftime("%H:%M"), t.strftime("%H:%M")] }, form.object.reservation_time&.strftime("%H:%M")),
+                        { include_blank: "Selecciona una hora" },
+                        class: "form-control", required: true %>
+      <% else %>
+        <%= form.select :reservation_time, [], { include_blank: "Sin horarios disponibles" }, class: "form-control", disabled: true %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="form-group reservation-submit">
+    <button type="button"
+            class="btn btn-primary btn-sm"
+            data-modal-open="reservation-confirm-modal"
+            <%= "disabled" if @available_times.blank? %>>
+      Reservar
+    </button>
+  </div>
+<% end %>
+
+<div class="menu-modal" id="reservation-confirm-modal" data-modal>
+  <div class="menu-modal-backdrop" data-modal-close></div>
+  <div class="menu-modal-card">
+    <button type="button" class="menu-modal-close" data-modal-close>×</button>
+    <h3>Confirmar reserva</h3>
+    <p class="text-muted">Estas seguro de hacer la reserva? Podras cancelar hasta 1 hora antes.</p>
+    <div class="form-actions">
+      <button type="button" class="btn btn-primary" data-confirm-submit="reservation-form">Confirmar</button>
+      <button type="button" class="btn btn-secondary" data-modal-close>Cancelar</button>
+    </div>
+  </div>
+</div>

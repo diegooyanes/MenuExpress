@@ -1,0 +1,42 @@
+<div class="container">
+  <div class="dashboard-header">
+    <div>
+      <p class="hero-kicker">Reservas</p>
+      <h1>Mis reservas</h1>
+      <p class="text-muted">Puedes cancelar hasta 1 hora antes.</p>
+    </div>
+  </div>
+
+  <% if @reservations.any? %>
+    <div class="reviews-section">
+      <% @reservations.each do |reservation| %>
+        <div class="review-item">
+          <div class="review-header">
+            <span class="review-author"><%= reservation.restaurant.name %></span>
+            <span class="review-rating"><%= reservation.status.humanize %></span>
+          </div>
+          <p class="review-text">
+            <strong>Fecha:</strong> <%= reservation.reserved_datetime.strftime("%d/%m/%Y %H:%M") %><br>
+            <strong>Personas:</strong> <%= reservation.number_of_guests %><br>
+            <strong>Teléfono:</strong> <%= reservation.phone_number %>
+          </p>
+          <% if reservation.status != "cancelled" %>
+            <div class="review-actions">
+              <% if reservation.cancellable? %>
+                <%= button_to "Cancelar reserva",
+                              users_reservation_path(reservation),
+                              method: :delete,
+                              class: "btn btn-secondary btn-sm",
+                              data: { confirm: "Cancelar esta reserva?" } %>
+              <% else %>
+                <span class="pill">No cancelable (menos de 1 hora)</span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-muted">Aun no tienes reservas.</p>
+  <% end %>
+</div>

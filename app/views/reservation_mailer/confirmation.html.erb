@@ -1,0 +1,27 @@
+<div style="font-family:Arial, sans-serif; color:#0f172a;">
+  <h2 style="margin:0 0 12px;">Tu reserva ha sido confirmada</h2>
+  <p>Hola <strong><%= @reservation.full_name %></strong>,</p>
+  <p>Gracias por reservar en <strong><%= @restaurant.name %></strong>.</p>
+
+  <table style="margin:16px 0; border-collapse:collapse;">
+    <tr>
+      <td style="padding:6px 12px; font-weight:600;">Fecha</td>
+      <td style="padding:6px 12px;"><%= @reservation.reserved_datetime.strftime("%d/%m/%Y") %></td>
+    </tr>
+    <tr>
+      <td style="padding:6px 12px; font-weight:600;">Hora</td>
+      <td style="padding:6px 12px;"><%= @reservation.reserved_datetime.strftime("%H:%M") %></td>
+    </tr>
+    <tr>
+      <td style="padding:6px 12px; font-weight:600;">Personas</td>
+      <td style="padding:6px 12px;"><%= @reservation.number_of_guests %></td>
+    </tr>
+    <tr>
+      <td style="padding:6px 12px; font-weight:600;">Teléfono</td>
+      <td style="padding:6px 12px;"><%= @reservation.phone_number %></td>
+    </tr>
+  </table>
+
+  <p><strong>Política de cancelación:</strong> puedes cancelar hasta 1 hora antes de tu reserva.</p>
+  <p style="margin-top:24px;color:#5f6b7a;font-size:12px;">MenuExpress</p>
+</div>

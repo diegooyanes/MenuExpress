@@ -6,6 +6,16 @@
 
     <div class="card-body">
       <%= form_with model: [:admin, @restaurant], local: true, multipart: true do |f| %>
+        <% if @restaurant.errors.any? %>
+          <div class="alert alert-danger">
+            <h4><%= pluralize(@restaurant.errors.count, "error") %> impidieron guardar:</h4>
+            <ul>
+              <% @restaurant.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
         <div class="form-group">
           <%= f.label :name, "Nombre" %>
           <%= f.text_field :name %>
@@ -22,29 +32,65 @@
             <%= f.text_field :address %>
           </div>
           <div class="form-group">
+            <%= f.label :phone_number, "Teléfono" %>
+            <%= f.telephone_field :phone_number %>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <%= f.label :max_capacity, "Aforo maximo (personas)" %>
+          <%= f.number_field :max_capacity, min: 1, class: "form-control" %>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
             <%= f.label :open_time, "Hora apertura" %>
-            <%= f.time_field :open_time %>
+            <%= f.text_field :open_time, value: @restaurant.open_time&.strftime("%H:%M"), placeholder: "09:00", inputmode: "numeric", pattern: "^\\d{2}:\\d{2}$" %>
           </div>
           <div class="form-group">
             <%= f.label :close_time, "Hora cierre" %>
-            <%= f.time_field :close_time %>
+            <%= f.text_field :close_time, value: @restaurant.close_time&.strftime("%H:%M"), placeholder: "23:30", inputmode: "numeric", pattern: "^\\d{2}:\\d{2}$" %>
           </div>
         </div>
 
+        <%= f.hidden_field :logo %>
+
         <div class="form-group">
-          <%= f.label :logo, "Logo (URL o archivo)" %>
-          <%= f.text_field :logo, placeholder: "URL de la imagen" %>
+          <%= f.label :cover_image, "Portada del restaurante" %>
+          <div class="file-input">
+            <label class="file-label">+ Subir portada</label>
+            <%= f.file_field :cover_image, class: "file-control" %>
+            <span class="file-name">Sin archivo</span>
+          </div>
+          <% if @restaurant.cover_image.attached? && @restaurant.cover_image.blob&.persisted? %>
+            <div class="photos-preview">
+              <div class="photo-item">
+                <%= image_tag @restaurant.cover_image.variant(resize_to_limit: [400, 240]) if @restaurant.cover_image.variable? %>
+              </div>
+            </div>
+          <% end %>
         </div>
 
         <div class="form-group">
-          <%= f.label :photos, "Fotos (subir)" %>
-          <%= f.file_field :photos, multiple: true %>
+          <%= f.label :photos, "Fotos adicionales (subir)" %>
+          <div class="file-input">
+            <label class="file-label">+ Subir fotos</label>
+            <%= f.file_field :photos, multiple: true, accept: "image/*", class: "file-control" %>
+            <span class="file-name">Puedes seleccionar varias</span>
+          </div>
+          <small class="text-muted">Puedes seleccionar varias a la vez (Ctrl o Shift).</small>
 
           <% if @restaurant.photos.attached? %>
             <div class="photos-preview">
               <% @restaurant.photos.each do |photo| %>
                 <div class="photo-item">
-                  <%= image_tag photo.variant(resize_to_limit: [300, 200]) if photo.variable? %>
+                  <%= image_tag photo.variant(resize_to_fill: [180, 140]) if photo.variable? %>
+                  <%= button_to "×",
+                                photo_admin_restaurant_path(@restaurant, photo_id: photo.id),
+                                method: :delete,
+                                class: "photo-delete",
+                                form: { class: "photo-delete-form" },
+                                data: { confirm: "Eliminar esta foto?" } %>
                 </div>
               <% end %>
             </div>
@@ -52,10 +98,30 @@
         </div>
 
         <div class="form-group">
+          <label>
+            <%= f.check_box :reservations_enabled %>
+            Reservas habilitadas
+          </label>
+        </div>
+
+        <div class="form-group">
           <%= f.submit "Guardar y continuar", class: "btn btn-primary" %>
           <%= link_to "Pagar $15/mes (Activar suscripción)", new_admin_restaurant_subscription_path(@restaurant), class: "btn btn-secondary" %>
         </div>
       <% end %>
+    </div>
+  </div>
+
+  <div class="card mt-2">
+    <div class="card-header">
+      <h3>Eliminar cuenta</h3>
+    </div>
+    <div class="card-body">
+      <p class="text-muted">Esta accion es permanente.</p>
+      <div class="form-actions">
+        <%= link_to "Eliminar cuenta", confirm_delete_admin_restaurant_path(@restaurant),
+                    class: "btn btn-danger" %>
+      </div>
     </div>
   </div>
 </div>

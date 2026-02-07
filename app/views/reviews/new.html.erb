@@ -1,0 +1,59 @@
+<div class="container">
+  <div class="dashboard-header">
+    <div>
+      <p class="hero-kicker">Resenas</p>
+      <h1>Deja tu opinion</h1>
+      <p class="text-muted"><%= @restaurant.name %></p>
+    </div>
+    <div class="dashboard-actions">
+      <%= link_to "Volver", restaurant_path(@restaurant), class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <div class="card">
+    <%= form_with model: [@restaurant, @review], local: true, class: "auth-form", multipart: true do |f| %>
+      <% if @review.errors.any? %>
+        <div class="alert alert-danger">
+          <h4><%= pluralize(@review.errors.count, "error") %> impidieron guardar:</h4>
+          <ul>
+            <% @review.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-row">
+        <% unless user_signed_in? %>
+          <div class="form-group">
+            <%= f.label :name, "Nombre" %>
+            <%= f.text_field :name, class: "form-control", required: true %>
+          </div>
+        <% end %>
+        <div class="form-group">
+          <%= f.label :rating, "Puntuacion" %>
+          <%= f.select :rating, options_for_select((1..5).to_a.reverse, @review.rating), {}, class: "form-control" %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :comment, "Comentario" %>
+        <%= f.text_area :comment, class: "form-control", rows: 4, required: true %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :photo, "Foto (opcional)" %>
+        <div class="file-input">
+          <label class="file-label">+ Subir foto</label>
+          <%= f.file_field :photo, class: "file-control" %>
+          <span class="file-name">Sin archivo</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <%= f.submit "Enviar resena", class: "btn btn-primary" %>
+        <%= link_to "Cancelar", restaurant_path(@restaurant), class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

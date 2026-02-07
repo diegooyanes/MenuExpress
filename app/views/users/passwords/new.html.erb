@@ -1,0 +1,42 @@
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-panel">
+      <div>
+        <p class="hero-kicker">MenuExpress</p>
+        <h2>Recupera tu acceso</h2>
+        <p>Te enviaremos un enlace para restablecer tu contraseña.</p>
+      </div>
+
+      <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "auth-form" }) do |f| %>
+        <%= render "restaurants/shared/error_messages", resource: resource %>
+
+        <div class="field">
+          <%= f.label :email %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
+        </div>
+
+        <div class="actions">
+          <%= f.submit "Enviar instrucciones", class: "btn btn-primary" %>
+          <%= link_to "Volver al inicio", restaurants_path, class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+
+      <div class="auth-links">
+        <%= render "users/shared/links" %>
+      </div>
+    </div>
+
+    <div class="auth-aside">
+      <div>
+        <h3>Tu cuenta segura</h3>
+        <p class="text-muted">Restablece el acceso en segundos.</p>
+      </div>
+      <ul>
+        <li>Acceso rápido</li>
+        <li>Correo de recuperación</li>
+        <li>Soporte dedicado</li>
+      </ul>
+      <span class="pill">Cuenta gratuita</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="dashboard-header">
+    <div>
+      <p class="hero-kicker">Suscripcion</p>
+      <h1>Estado de la suscripcion</h1>
+      <p class="text-muted"><%= @restaurant.name %></p>
+    </div>
+    <div class="dashboard-actions">
+      <%= link_to "Volver al dashboard", admin_restaurant_path(@restaurant), class: "btn btn-secondary" %>
+    </div>
+  </div>
+
+  <div class="module-card">
+    <p><strong>Plan:</strong> <%= @subscription.plan %></p>
+    <p><strong>Estado:</strong> <%= @subscription.status %></p>
+    <p><strong>Precio:</strong> $<%= @subscription.price %> / mes</p>
+    <p><strong>Inicio:</strong> <%= @subscription.started_at&.strftime("%d/%m/%Y") || "N/A" %></p>
+  </div>
+</div>

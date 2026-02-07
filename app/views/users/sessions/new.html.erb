@@ -1,0 +1,55 @@
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-panel">
+      <div>
+        <p class="hero-kicker">MenuExpress</p>
+        <h2>Inicia sesión como usuario</h2>
+        <p>Reserva y guarda tus favoritos.</p>
+      </div>
+
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "auth-form" }) do |f| %>
+        <%= render "restaurants/shared/error_messages", resource: resource %>
+        <div class="field">
+          <%= f.label :email %>
+          <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
+        </div>
+
+        <div class="field">
+          <%= f.label :password %>
+          <%= f.password_field :password, autocomplete: "current-password", class: "form-control" %>
+        </div>
+
+        <% if devise_mapping.rememberable? %>
+          <div class="field">
+            <label>
+              <%= f.check_box :remember_me %>
+              Recordarme
+            </label>
+          </div>
+        <% end %>
+
+        <div class="actions">
+          <%= f.submit "Iniciar sesión", class: "btn btn-primary" %>
+          <%= link_to "Volver al inicio", restaurants_path, class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+
+      <div class="auth-links">
+        <%= render "users/shared/links" %>
+      </div>
+    </div>
+
+    <div class="auth-aside">
+      <div>
+        <h3>Reservas más rápidas</h3>
+        <p class="text-muted">Guarda tu información para reservar en segundos.</p>
+      </div>
+      <ul>
+        <li>Historial de reservas</li>
+        <li>Reseñas verificadas</li>
+        <li>Acceso desde cualquier dispositivo</li>
+      </ul>
+      <span class="pill">Cuenta gratuita</span>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h2>Confirmar eliminacion</h2>
+    </div>
+    <div class="card-body">
+      <p class="text-muted">
+        Estas a punto de eliminar el restaurante <strong><%= @restaurant.name %></strong>.
+        Se perderan todas las reservas, mesas, menu y reseñas asociadas.
+      </p>
+      <div class="form-actions">
+        <%= button_to "Si, eliminar definitivamente", admin_restaurant_path(@restaurant),
+                      method: :delete,
+                      class: "btn btn-danger" %>
+        <%= link_to "Cancelar", edit_admin_restaurant_path(@restaurant), class: "btn btn-secondary" %>
+      </div>
+    </div>
+  </div>
+</div>
