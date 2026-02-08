@@ -62,17 +62,17 @@ Rails.application.configure do
 
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    address: "smtp.gmail.com",
-    port: 587,
-    domain: "gmail.com",
-    user_name: ENV["GMAIL_USER"],
-    password: ENV["GMAIL_APP_PASSWORD"],
+    address: ENV.fetch("SMTP_ADDRESS", "smtp.gmail.com"),
+    port: ENV.fetch("SMTP_PORT", 587),
+    domain: ENV.fetch("SMTP_DOMAIN", "gmail.com"),
+    user_name: ENV["SMTP_USERNAME"],
+    password: ENV["SMTP_PASSWORD"],
     authentication: :plain,
     enable_starttls_auto: true
   }
 
   config.action_mailer.default_options = {
-    from: ENV["MAIL_FROM"] || ENV["GMAIL_USER"] || "no-reply@menuexpress.app"
+    from: ENV["MAILER_SENDER"] || ENV["SMTP_USERNAME"] || "no-reply@menuexpress.app"
   }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
