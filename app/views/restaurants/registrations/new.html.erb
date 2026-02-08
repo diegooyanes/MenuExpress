@@ -27,7 +27,7 @@
           <% end %>
           <div class="password-field">
             <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
-            <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password" aria-label="Mostrar contraseña">ver</button>
+            <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password" aria-label="Mostrar contraseña"><span class="password-toggle-icon" aria-hidden="true"></span></button>
           </div>
         </div>
 
@@ -35,7 +35,7 @@
           <%= f.label :password_confirmation %>
           <div class="password-field">
             <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
-            <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password_confirmation" aria-label="Mostrar contraseña">ver</button>
+            <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password_confirmation" aria-label="Mostrar contraseña"><span class="password-toggle-icon" aria-hidden="true"></span></button>
           </div>
         </div>
 

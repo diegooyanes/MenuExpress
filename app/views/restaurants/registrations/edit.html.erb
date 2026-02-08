@@ -16,7 +16,7 @@
     <p><%= f.label :password %> <i>(leave blank if you don't want to change it)</i></p>
     <div class="password-field">
       <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
-      <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password" aria-label="Mostrar contraseña">ver</button>
+      <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password" aria-label="Mostrar contraseña"><span class="password-toggle-icon" aria-hidden="true"></span></button>
     </div>
     <% if @minimum_password_length %>
       <p><em><%= @minimum_password_length %> characters minimum</em></p>
@@ -27,7 +27,7 @@
     <p><%= f.label :password_confirmation %></p>
     <div class="password-field">
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
-      <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password_confirmation" aria-label="Mostrar contraseña">ver</button>
+      <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password_confirmation" aria-label="Mostrar contraseña"><span class="password-toggle-icon" aria-hidden="true"></span></button>
     </div>
   </div>
 
@@ -35,7 +35,7 @@
     <p><%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i></p>
     <div class="password-field">
       <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control" %>
-      <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_current_password" aria-label="Mostrar contraseña">ver</button>
+      <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_current_password" aria-label="Mostrar contraseña"><span class="password-toggle-icon" aria-hidden="true"></span></button>
     </div>
   </div>
 

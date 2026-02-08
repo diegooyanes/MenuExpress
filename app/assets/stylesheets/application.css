@@ -266,6 +266,11 @@ textarea{min-height:120px}
 }
 .password-toggle:hover{color:var(--text);box-shadow:var(--shadow-3)}
 .password-toggle.is-active{color:var(--accent)}
+.password-toggle-icon{
+  width:16px;height:16px;display:block;opacity:0.85;
+  background:no-repeat center/16px 16px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23626c7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z'/%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3C/svg%3E");
+}
+.password-toggle.is-active .password-toggle-icon{opacity:1}
 
 .reservation-form{
   max-width:720px;margin:var(--s-xl) auto;background:var(--page);padding:var(--s-xl);border-radius:var(--r-xl);
