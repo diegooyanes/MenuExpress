@@ -256,6 +256,16 @@ input,textarea,select{
 input:focus,textarea:focus,select:focus{outline:none;border-color:rgba(47,107,255,0.5);box-shadow:0 0 0 4px rgba(47,107,255,0.12)}
 textarea{min-height:120px}
 .form-control{width:100%}
+.password-field{position:relative}
+.password-field .form-control{padding-right:42px}
+.password-toggle{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  width:30px;height:30px;border-radius:999px;border:1px solid var(--border);
+  background:#fff;color:var(--muted);cursor:pointer;display:inline-flex;
+  align-items:center;justify-content:center;font-size:14px;transition:all 0.2s ease
+}
+.password-toggle:hover{color:var(--text);box-shadow:var(--shadow-3)}
+.password-toggle.is-active{color:var(--accent)}
 
 .reservation-form{
   max-width:720px;margin:var(--s-xl) auto;background:var(--page);padding:var(--s-xl);border-radius:var(--r-xl);

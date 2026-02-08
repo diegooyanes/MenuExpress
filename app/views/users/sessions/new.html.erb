@@ -16,7 +16,10 @@
 
         <div class="field">
           <%= f.label :password %>
-          <%= f.password_field :password, autocomplete: "current-password", class: "form-control" %>
+          <div class="password-field">
+            <%= f.password_field :password, autocomplete: "current-password", class: "form-control" %>
+            <button type="button" class="password-toggle" data-toggle="password" data-target="user_password" aria-label="Mostrar contraseña">ver</button>
+          </div>
         </div>
 
         <% if devise_mapping.rememberable? %>

@@ -25,12 +25,18 @@
           <% if @minimum_password_length %>
             <small class="text-muted">Minimo <%= @minimum_password_length %> caracteres</small>
           <% end %>
-          <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
+          <div class="password-field">
+            <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
+            <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password" aria-label="Mostrar contraseña">ver</button>
+          </div>
         </div>
 
         <div class="field">
           <%= f.label :password_confirmation %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+          <div class="password-field">
+            <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+            <button type="button" class="password-toggle" data-toggle="password" data-target="restaurant_password_confirmation" aria-label="Mostrar contraseña">ver</button>
+          </div>
         </div>
 
         <div class="actions">

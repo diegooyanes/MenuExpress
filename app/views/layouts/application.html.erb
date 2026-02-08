@@ -147,7 +147,7 @@
         }
       }
 
-      function initModals() {
+        function initModals() {
         document.querySelectorAll('[data-modal-open]').forEach(function(btn) {
           if (btn.dataset.bound === 'true') return;
           btn.dataset.bound = 'true';
@@ -335,20 +335,40 @@
           });
         });
 
-      }
+        }
 
-      document.addEventListener('DOMContentLoaded', function() {
-        initNavbarMenu();
-        initModals();
-        initDatepickers();
-        initFileInputs();
-      });
-      document.addEventListener('turbo:load', function() {
-        initNavbarMenu();
-        initModals();
-        initDatepickers();
-        initFileInputs();
-      });
+        function initPasswordToggles() {
+          var toggles = document.querySelectorAll('[data-toggle="password"]');
+          toggles.forEach(function(toggle){
+            if (toggle.dataset.bound === 'true') return;
+            toggle.dataset.bound = 'true';
+            toggle.addEventListener('click', function(){
+              var targetId = this.getAttribute('data-target');
+              if (!targetId) return;
+              var input = document.getElementById(targetId);
+              if (!input) return;
+              var isPassword = input.getAttribute('type') === 'password';
+              input.setAttribute('type', isPassword ? 'text' : 'password');
+              this.setAttribute('aria-pressed', isPassword ? 'true' : 'false');
+              this.classList.toggle('is-active', isPassword);
+            });
+          });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          initNavbarMenu();
+          initModals();
+          initDatepickers();
+          initFileInputs();
+          initPasswordToggles();
+        });
+        document.addEventListener('turbo:load', function() {
+          initNavbarMenu();
+          initModals();
+          initDatepickers();
+          initFileInputs();
+          initPasswordToggles();
+        });
     </script>
   </body>
 </html>
